@@ -1,0 +1,152 @@
+.top-navigation {
+    background-color: #1B262C;
+    display: flex;
+    height: 111px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    margin-bottom: 0;
+}
+
+.logo-title {
+    font-size: 32px;
+    color: white;
+    align-self: center;
+    margin-left: 30px;
+    display: block;
+}
+
+.nav_main {
+    display: flex;
+    align-items: center;
+    margin-left: 610px;
+} 
+
+.nav_top {
+    font-size: 24px;
+    color: white;
+    display: flex;
+    gap: 30px;
+}
+
+.nav_side {
+    display: flex;
+    margin-left: 30px;
+    margin-right: 30px;
+    gap: 25px;
+    align-self: center;
+}
+
+.nav_side img {
+    width: 15px;
+    height: 15px;
+    object-fit: contain;
+}
+
+.burger {
+    display: none; 
+}
+  
+@media (max-width: 1240px) {
+    .burger {
+      display: none;
+    }
+  
+    .nav_main {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-left: 430px;
+    }
+  
+    .nav_top {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+    }
+  
+    .nav_side {
+      display: none !important;
+    }
+  }
+  
+  @media (max-width: 1070px) {
+    .burger {
+      display: none;
+    }
+  
+    .nav_main {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-left: 400px;
+    }
+  
+    .nav_top {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+  
+    .nav_side {
+      display: none !important;
+    }
+
+    .logo-title {
+        font-size: 20px;
+        margin-left: 0;
+        margin-bottom: 10px;
+    }
+
+    .top-navigation {
+        background-color: #1B262C;
+        display: flex;
+        height: 90px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px;
+        margin-bottom: 0;
+    }
+  }
+
+  @media (max-width: 875px) {
+    .burger {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        position: absolute; 
+        right: 20px;
+      }
+    
+      /*анимированные линии */
+      .burger span {
+        width: 30px;
+        height: 4px;
+        background-color: #c4cfd5;
+        transition: 0.4s;
+      }
+    
+      /* Анимация при активном состоянии */
+      .burger.active span:nth-child(1) {
+        transform: rotate(45deg) translate(7px, 7px);
+      }
+    
+      .burger.active span:nth-child(2) {
+        opacity: 0;
+      }
+    
+      .burger.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -7px);
+      }
+    
+      .nav_main {
+        display: none !important;
+      }
+      /* .top-navigation {
+        display: none !important;
+      } */
+  }
+
+  
