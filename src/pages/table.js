@@ -6,6 +6,7 @@ import '../styles/table.css';
 import headerImg from '../img/img_1.jpg';
 
 import BurgerMenu from '../components/burger_menu.js';
+import MusicPoll from '../components/music_poll.js';
 
 export default function Home() {
   return (
@@ -66,6 +67,8 @@ export default function Home() {
         </table>
       </main>    
 
+      <MusicPoll/>
+      
       <footer>
         <nav className="foot_nav">
           <a href="#">HOME</a>
