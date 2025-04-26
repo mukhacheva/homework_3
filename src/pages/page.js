@@ -12,6 +12,7 @@ import redPhoneImg from '../img/phone_img_red.png';
 import envelopeImg from '../img/envelope_img.png';
 
 import BurgerMenu from '../components/burger_menu.js';
+import ContactForm from '../components/auth_form.js';
 
 export default function Home() {
   return (
@@ -53,7 +54,9 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="auth_form">
+
+            <ContactForm/>
+            {/* <div className="auth_form">
               <form action="#" method="POST">
                 <div className="form_row">
                   <input type="text" id="name" name="name" required placeholder="Name" />
@@ -72,7 +75,7 @@ export default function Home() {
                   <button type="submit">Contact Us</button>
                 </div>
               </form>
-            </div>
+            </div> */}
           </div>
         </div>
       </main>
