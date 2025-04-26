@@ -5,22 +5,18 @@ import { Link } from 'react-router-dom';
 
 // Импортируем изображения
 import line from '../img/line.png';
-import headerImg from '../img/img_1.jpg';
-// import shareImg from '../img/share_img.png';
-// import phoneImg from '../img/phone_img.png';
 import redPhoneImg from '../img/phone_img_red.png';
 import envelopeImg from '../img/envelope_img.png';
 
 import BurgerMenu from '../components/burger_menu.js';
 import ContactForm from '../components/auth_form.js';
+import ContentSlider from '../components/content_slider.js';
 
 export default function Home() {
   return (
     <div>
       <BurgerMenu/>
-
-      {/* Используем импортированное изображение */}
-      <img src={headerImg} className="header_img" alt="Header image" />
+      <ContentSlider/>
 
       <main>
         <div className="square">

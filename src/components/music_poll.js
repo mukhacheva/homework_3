@@ -167,7 +167,7 @@ const MusicPoll = () => {
 
   return (
     <div className="music-poll">
-      <h3>Music Poll</h3>
+      <h3>What's your music lover type?</h3>
 
       {showResults ? (
         <div className="poll-results">

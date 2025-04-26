@@ -3,18 +3,15 @@ import React from 'react';
 import { Link } from 'react-router-dom'; 
 import '../styles/table.css';
 
-import headerImg from '../img/img_1.jpg';
-
 import BurgerMenu from '../components/burger_menu.js';
 import MusicPoll from '../components/music_poll.js';
+import ContentSlider from '../components/content_slider.js';
 
 export default function Home() {
   return (
     <div>
       <BurgerMenu/>
-
-      {/* Используем импортированное изображение */}
-      <img src={headerImg} className="header_img" alt="Header image" />
+      <ContentSlider/>
 
       <main>
         <table className="my-table">
