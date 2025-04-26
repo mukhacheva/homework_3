@@ -28,63 +28,22 @@
     z-index: 1;
   }
   
-  /* .square {
-    margin-left: 40px;
-    position: absolute;
-    background-color: #D9D9D9;
-    width: 400px;
-    height: 400px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    top: 250px;
-    z-index: 2;
-    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);
+  @media (max-width: 767px) {
+    .content-slider {
+      height: 250px; 
+    }
+  
+    .slider-image {
+      object-fit: cover; 
+    }
   }
   
-  .naming {
-    display: flex;
-    justify-content: center;
-    margin-left: 35px;
-  }
+  @media (max-width: 479px) {
+    .content-slider {
+      height: 200px; 
+    }
   
-  .naming h1 {
-    color: #444950;
-    font-size: 50px;
-    margin-bottom: 0;
+    .slider-image {
+      object-fit: cover;
+    }
   }
-  
-  .naming p {
-    margin-bottom: 0;
-    margin-top: 25px;
-  }
-  
-  .naming_text {
-    display: flex;
-    justify-content: center;
-    margin-left: 35px;
-  }
-  
-  .naming_text p {
-    color: #444950;
-    font-size: 24px;
-    margin-top: 0;
-  }
-  
-  .naming_tickets {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-left: 60px;
-    background-color: #FF1841;
-    height: 60px;
-    width: 202px;
-    border-radius: 5px;
-  }
-  
-  .naming_tickets p {
-    color: white;
-    font-size: 15px;
-    font-weight: 500;
-  }
-   */
