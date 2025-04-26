@@ -3,34 +3,14 @@ import React from 'react';
 import { Link } from 'react-router-dom'; 
 import '../styles/table.css';
 
-// Импортируем изображения
-import lineImg from '../img/line.png';
 import headerImg from '../img/img_1.jpg';
-import shareImg from '../img/share_img.png';
-import phoneImg from '../img/phone_img.png';
+
+import BurgerMenu from '../components/burger_menu.js';
 
 export default function Home() {
   return (
     <div>
-      <header>
-        <div className="logo-title"><p>Diamond Festival</p></div>
-        <nav className="nav_main">
-          <div className="nav_top">
-            <div className="home">
-              {/* Используем импортированное изображение */}
-              <img src={lineImg} className="line" alt="line" />
-              <Link to="/">home</Link> {/* Ссылка на главную */}
-            </div>
-            <Link to="/table">tickets</Link> {/* Ссылка на страницу с таблицей */}
-            <a href="#">lineup</a>
-            <a href="#">contact</a>
-          </div>
-          <div className="nav_side">
-            <a href="#"><img src={shareImg} alt="Share_image" /></a>
-            <a href="#"><img src={phoneImg} alt="Phone_image" /></a>
-          </div>
-        </nav>
-      </header>
+      <BurgerMenu/>
 
       {/* Используем импортированное изображение */}
       <img src={headerImg} className="header_img" alt="Header image" />

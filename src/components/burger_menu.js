@@ -17,7 +17,6 @@ function BurgerMenu() {
     setMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  // Закрытие меню при клике вне его области
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (

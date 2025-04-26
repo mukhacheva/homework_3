@@ -22,6 +22,7 @@
     margin-left: 610px;
 } 
 
+
 .nav_top {
     font-size: 24px;
     color: white;
@@ -110,6 +111,18 @@
   }
 
   @media (max-width: 875px) {
+    .nav_top {
+      display: flex;
+      flex-direction: column !important;
+      gap: 40px !important;
+      align-items: center; 
+      text-align: center; 
+      font-size: 25px !important;
+    }
+
+    .line {
+      display: none !important;
+    }
     .burger {
         display: flex;
         flex-direction: column;
@@ -117,18 +130,18 @@
         gap: 6px;
         cursor: pointer;
         position: absolute; 
-        right: 20px;
+        right: 10px;
+
+        z-index: 20;
       }
     
-      /*анимированные линии */
       .burger span {
         width: 30px;
         height: 4px;
-        background-color: #c4cfd5;
+        background-color: #ffffff;
         transition: 0.4s;
       }
     
-      /* Анимация при активном состоянии */
       .burger.active span:nth-child(1) {
         transform: rotate(45deg) translate(7px, 7px);
       }
@@ -144,9 +157,51 @@
       .nav_main {
         display: none !important;
       }
-      /* .top-navigation {
-        display: none !important;
-      } */
+
+      .nav_main.active {
+        display: flex !important;
+        flex-direction: column !important; 
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: rgba(243, 249, 255, 0.8);
+        width: 50%; 
+        height: 70vh;
+        box-shadow: -2px 0 10px rgba(100, 100, 100, 0.2);
+        padding: 20px;
+        padding-top: 50px;
+        z-index: 10;
+        
+      }
+      
+      .nav_main a {
+        gap: 40px; 
+        color: #444950;
+      }
+
+      .nav_main a:hover {
+        color:#1B262C;
+        font-weight: 600;
+      }
+  }
+
+  @media (max-width: 550px) {
+    .nav_main.active {
+      display: flex !important;
+      flex-direction: column !important; 
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: rgba(243, 249, 255, 0.8);
+      width: 50%; 
+      height: 70vh;
+      box-shadow: -2px 0 10px rgba(100, 100, 100, 0.2);
+      padding: 30px;
+      padding-top: 60px;
+      z-index: 10;
+      
+    }
+    
   }
 
   
