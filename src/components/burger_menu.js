@@ -58,7 +58,7 @@ function BurgerMenu() {
               <Link to="/">home</Link>
             </div>
             <Link to="/table">tickets</Link>
-            <a href="#">lineup</a>
+            <Link to="/poll">lineup</Link>
             <a href="#">contact</a>
           </div>
 

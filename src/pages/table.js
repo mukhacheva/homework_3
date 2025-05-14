@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import '../styles/table.css';
 
 import BurgerMenu from '../components/burger_menu.js';
-import MusicPoll from '../components/music_poll.js';
+// import MusicPoll from '../components/music_poll.js';
 import ContentSlider from '../components/content_slider.js';
 
 export default function Home() {
@@ -64,7 +64,7 @@ export default function Home() {
         </table>
       </main>    
 
-      <MusicPoll/>
+      {/* <MusicPoll/> */}
       
       <footer>
         <nav className="foot_nav">

@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-
 import '../styles/music_poll.css';
 
 const MusicPoll = () => {
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
+  const [userName, setUserName] = useState(''); 
 
   const questions = [
+    {
+      type: 'text',
+      question: 'Hello! What is your name?',
+    },
     {
       type: 'single',
       question: "How old are you?",
@@ -173,10 +177,12 @@ const MusicPoll = () => {
         <div className="poll-results">
           <h4>Your music lover type: <em>{getType()}</em></h4>
           <h5>Your score: {calculateScore()}</h5>
+          <h5>Thank you for passing our test, {userName}!!!</h5> 
           <button onClick={() => {
             setShowResults(false);
             setAnswers({});
             setCurrentQ(0);
+            setUserName('');  
           }}>
             Try again
           </button>
@@ -214,8 +220,14 @@ const MusicPoll = () => {
                   rows="4"
                   cols="40"
                   value={answers[currentQ]?.value || ''}
-                  onChange={(e) => handleAnswer(e.target.value, 0)}
-                  placeholder="Enter your answer..."
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    handleAnswer(value, 0);
+                    if (currentQ === 0) {
+                      setUserName(value); 
+                    }
+                  }}
+                  placeholder="Enter your answerrrrr..."
                 />
               )}
             </div>

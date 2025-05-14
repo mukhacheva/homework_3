@@ -51,26 +51,7 @@ export default function Home() {
 
 
             <ContactForm/>
-            {/* <div className="auth_form">
-              <form action="#" method="POST">
-                <div className="form_row">
-                  <input type="text" id="name" name="name" required placeholder="Name" />
-                  <input type="tel" id="phone" name="phone" required placeholder="Phone" />
-                </div>
-
-                <div className="form_row">
-                  <input type="email" id="email" name="email" required placeholder="Email adress" />
-                </div>
-
-                <div className="form_row">
-                  <textarea id="message" name="message" required placeholder="Enter your message"></textarea>
-                </div>
-
-                <div className="form_row">
-                  <button type="submit">Contact Us</button>
-                </div>
-              </form>
-            </div> */}
+            
           </div>
         </div>
       </main>

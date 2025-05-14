@@ -7,7 +7,10 @@
     max-width: 600px;
     margin: 0 auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+    overflow: hidden; 
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
   
   h3 {
     text-align: center;
@@ -15,6 +18,11 @@
     margin-bottom: 20px;
   }
   
+  .poll-question {
+    height: 370px; 
+    overflow-y: auto; 
+  }
+
   .poll-question p {
     font-size: 18px;
     margin-bottom: 10px;
