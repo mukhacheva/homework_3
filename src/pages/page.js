@@ -3,7 +3,6 @@ import React from 'react';
 import '../styles/page.css';
 import { Link } from 'react-router-dom'; 
 
-// Импортируем изображения
 import line from '../img/line.png';
 import redPhoneImg from '../img/phone_img_red.png';
 import envelopeImg from '../img/envelope_img.png';

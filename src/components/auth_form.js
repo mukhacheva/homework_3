@@ -73,44 +73,52 @@ function ContactForm() {
       <div className="auth_form">
         <form onSubmit={handleSubmit}>
           <div className="form_row">
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              value={formData.name}
-              onChange={handleChange}
-            />
-            {errors.name && <span className="error">{errors.name}</span>}
+            <div className="input_wrapper">
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                value={formData.name}
+                onChange={handleChange}
+              />
+              {errors.name && <span className="error">{errors.name}</span>}
+            </div>
 
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone"
-              value={formData.phone}
-              onChange={handleChange}
-            />
-            {errors.phone && <span className="error">{errors.phone}</span>}
+            <div className="input_wrapper">
+              <input
+                type="tel"
+                name="phone"
+                placeholder="Phone"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+              {errors.phone && <span className="error">{errors.phone}</span>}
+            </div>
           </div>
 
           <div className="form_row">
-            <input
-              type="email"
-              name="email"
-              placeholder="Email address"
-              value={formData.email}
-              onChange={handleChange}
-            />
-            {errors.email && <span className="error">{errors.email}</span>}
+            <div className="input_wrapper">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email address"
+                value={formData.email}
+                onChange={handleChange}
+              />
+              {errors.email && <span className="error">{errors.email}</span>}
+            </div>
           </div>
 
           <div className="form_row">
-            <textarea
-              name="message"
-              placeholder="Enter your message"
-              value={formData.message}
-              onChange={handleChange}
-            />
-            {errors.message && <span className="error">{errors.message}</span>}
+            <div className="input_wrapper">
+              <textarea
+                name="message"
+                placeholder="Enter your message"
+                value={formData.message}
+                onChange={handleChange}
+              />
+              {errors.message && <span className="error">{errors.message}</span>}
+            </div>
           </div>
 
           <div className="form_row">
