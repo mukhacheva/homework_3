@@ -9,29 +9,33 @@ import '../styles/burger_menu.css';
 
 function BurgerMenu() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
   const menuRef = useRef(null);
   const burgerRef = useRef(null);
 
   const toggleMenu = () => {
-    setMobileMenuOpen(!isMobileMenuOpen);
+    setMobileMenuOpen(prev => !prev);
+    setActiveDropdown(null);
+  };
+
+  const toggleDropdown = (menuName) => {
+    setActiveDropdown(prev => (prev === menuName ? null : menuName));
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        menuRef.current && !menuRef.current.contains(event.target) && 
+        menuRef.current && !menuRef.current.contains(event.target) &&
         burgerRef.current && !burgerRef.current.contains(event.target)
       ) {
-        setMobileMenuOpen(false); 
+        setMobileMenuOpen(false);
+        setActiveDropdown(null);
       }
     };
 
     document.addEventListener('click', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
   return (
@@ -45,28 +49,58 @@ function BurgerMenu() {
           className={`burger ${isMobileMenuOpen ? 'active' : ''}`} 
           onClick={toggleMenu}
           ref={burgerRef} 
+          aria-label="Toggle menu"
+          aria-expanded={isMobileMenuOpen}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') toggleMenu(); }}
         >
           <span></span>
           <span></span>
           <span></span>
         </div>
 
-        <div className={`nav_main ${isMobileMenuOpen ? 'active' : ''}`} ref={menuRef}>
-          <div className="nav_top">
-            <div className="home">
+        <nav className={`nav_main ${isMobileMenuOpen ? 'active' : ''}`} ref={menuRef} aria-hidden={!isMobileMenuOpen}>
+          <ul className="nav_top">
+            <li className="home">
               <img src={line} className="line" alt="line" />
               <Link to="/">home</Link>
-            </div>
-            <Link to="/table">tickets</Link>
-            <Link to="/poll">lineup</Link>
-            <a href="#">contact</a>
-          </div>
+            </li>
+
+            <li>
+              <Link to="/table">tickets</Link>
+            </li>
+
+            <li>
+              <Link to="/poll">lineup</Link>
+            </li>
+
+            <li>
+              <a
+                href="#"
+                className="dropdown-link"
+                onClick={e => {
+                  e.preventDefault();
+                  toggleDropdown('account');
+                }}
+                aria-expanded={activeDropdown === 'account'}
+              >
+                account
+              </a>
+              <ul className={`dropdown-menu ${activeDropdown === 'account' ? 'active' : ''}`}>
+                <li><a href="#">registration</a></li>
+                <li><a href="#">login</a></li>
+                <li><a href="#">forgot password</a></li>
+                <li><a href="#">need help</a></li>
+              </ul>
+            </li>
+          </ul>
 
           <div className="nav_side">
             <a href="#"><img src={shareImg} alt="Share_image" /></a>
             <a href="#"><img src={phoneImg} alt="Phone_image" /></a>
           </div>
-        </div>
+        </nav>
       </div>
     </header>
   );
