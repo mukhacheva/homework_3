@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-
 import '../styles/music_poll.css';
 
 const MusicPoll = () => {
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
+  const [userName, setUserName] = useState('');
 
   const questions = [
+    {
+      type: 'text',
+      question: "What is your name?"
+    },
     {
       type: 'single',
       question: "How old are you?",
@@ -50,7 +54,7 @@ const MusicPoll = () => {
         { answer: "Jazz", points: 10 },
         { answer: "Classical", points: 10 },
         { answer: "Electronic", points: 10 },
-        { answer: "I love everything form Pop to Electronic", points: 25}
+        { answer: "I love everything form Pop to Electronic", points: 25 }
       ]
     },
     {
@@ -118,7 +122,10 @@ const MusicPoll = () => {
     }
   ];
 
-  const handleAnswer = (value, points) => {
+  const handleAnswer = (value, points = 0) => {
+    if (currentQ === 0) {
+      setUserName(value);
+    }
     setAnswers(prev => ({ ...prev, [currentQ]: { value, points } }));
   };
 
@@ -173,10 +180,12 @@ const MusicPoll = () => {
         <div className="poll-results">
           <h4>Your music lover type: <em>{getType()}</em></h4>
           <h5>Your score: {calculateScore()}</h5>
+          <p>Thank you for your attention{userName ? `, ${userName}` : ''}!</p>
           <button onClick={() => {
             setShowResults(false);
             setAnswers({});
             setCurrentQ(0);
+            setUserName('');
           }}>
             Try again
           </button>
@@ -215,7 +224,7 @@ const MusicPoll = () => {
                   cols="40"
                   value={answers[currentQ]?.value || ''}
                   onChange={(e) => handleAnswer(e.target.value, 0)}
-                  placeholder="Enter your answer..."
+                  placeholder="Enter your answerrrr..."
                 />
               )}
             </div>
@@ -227,7 +236,7 @@ const MusicPoll = () => {
             )}
             {currentQ < questions.length - 1 ? (
               <button onClick={() => setCurrentQ(currentQ + 1)} disabled={!isAnswered()}>
-                Next → 
+                Next →
               </button>
             ) : (
               <button className="submit-btn" onClick={handleSubmit} disabled={!isAnswered()}>

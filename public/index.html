@@ -27,7 +27,17 @@
     <title>React App</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>
+      You need to enable JavaScript to run this app.<br />
+      Please visit
+      <a
+        href="https://www.enable-javascript.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        >this page</a
+      >
+      to learn how to enable JavaScript in your browser.
+    </noscript>
     <div id="root"></div>
     <!--
       This HTML file is a template.
@@ -39,5 +49,27 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+
+    <style>
+      noscript {
+        display: block;
+        background-color: #ffdddd;
+        color: #900;
+        padding: 15px 20px;
+        text-align: center;
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+        border: 2px solid #900;
+        border-radius: 5px;
+        font-size: 1.2rem;
+      }
+      noscript a {
+        color: #900;
+        text-decoration: underline;
+      }
+      noscript a:hover {
+        color: #600;
+      }
+    </style>
   </body>
 </html>

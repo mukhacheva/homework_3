@@ -63,8 +63,6 @@ export default function Home() {
           </tbody>
         </table>
       </main>    
-
-      <MusicPoll/>
       
       <footer>
         <nav className="foot_nav">

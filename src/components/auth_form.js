@@ -15,21 +15,31 @@ function ContactForm() {
 
   const validateField = (name, value) => {
     let error = '';
+
     switch (name) {
       case 'name':
         if (!value.trim()) {
           error = 'Name is required! Example: Kyle Gallner';
-        } else if (!/^[A-Za-zА-Яа-яЁё\s]+$/.test(value)) {
-          error = 'You can use only letter! Example: Flora Winx';
+        } else if (/^\s/.test(value)) {
+          error = 'Name cannot start with a space';
+        } else if (/[А-Яа-яЁё]/.test(value)) {
+          error = 'Russian letters are not allowed in name';
+        } else if (!/^[A-Za-z\s]+$/.test(value)) {
+          error = 'You can use only Latin letters and spaces! Example: Flora Winx';
         }
         break;
+
       case 'phone':
-        if (!value.trim()) {
+        const digits = value.replace(/\D/g, '');
+        if (!digits) {
           error = 'Phone is required! Example: 89765432100';
-        } else if (!/^\d{11}$/.test(value)) {
-          error = 'Phone must be only 11 digits! Example: 89765432100';
+        } else if (digits.length !== 11) {
+          error = 'Phone must be exactly 11 digits! Example: 89765432100';
+        } else if (!/^8|7/.test(digits)) {
+          error = 'Phone must start with 8 or 7';
         }
         break;
+
       case 'email':
         if (!value.trim()) {
           error = 'Email is required! Example: KyleGallner@gmail.com';
@@ -37,17 +47,60 @@ function ContactForm() {
           error = 'Invalid email! Example: KyleGallner@gmail.com';
         }
         break;
+
       case 'message':
         if (!value.trim()) error = 'You did not text any message!';
         break;
+
       default:
         break;
     }
+
     return error;
   };
 
+  const formatPhone = (value) => {
+    let digits = value.replace(/\D/g, '');
+
+    if (digits.length === 10 && digits.startsWith('9')) {
+      digits = '7' + digits;
+    }
+
+    
+    if (digits.startsWith('8')) {
+      digits = '7' + digits.slice(1);
+    }
+
+    if (digits.length > 0) {
+      let formatted = '+7';
+
+      if (digits.length >= 1) {
+        formatted += '(' + digits.slice(1, 4);
+      }
+      if (digits.length >= 4) {
+        formatted += ') ' + digits.slice(4, 7);
+      }
+      if (digits.length >= 7) {
+        formatted += '-' + digits.slice(7, 9);
+      }
+      if (digits.length >= 9) {
+        formatted += '-' + digits.slice(9, 11);
+      }
+
+      return formatted;
+    }
+
+    return value;
+  };
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    let value = e.target.value;
+
+    if (name === 'phone') {
+      value = formatPhone(value);
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     const error = validateField(name, value);
@@ -63,8 +116,10 @@ function ContactForm() {
     });
 
     setErrors(newErrors);
+
     if (Object.keys(newErrors).length === 0) {
       setIsModalOpen(true);
+      setFormData({ name: '', phone: '', email: '', message: '' });
     }
   };
 
@@ -91,6 +146,7 @@ function ContactForm() {
                 placeholder="Phone"
                 value={formData.phone}
                 onChange={handleChange}
+                maxLength={18} 
               />
               {errors.phone && <span className="error">{errors.phone}</span>}
             </div>
