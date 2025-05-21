@@ -34,31 +34,6 @@ const MusicPoll = () => {
     },
     {
       type: 'single',
-      question: "How often do you attend concerts of your favorite artists?",
-      options: [
-        { answer: "Never", points: 5 },
-        { answer: "Depends", points: 7 },
-        { answer: "1-2", points: 8 },
-        { answer: "3-4", points: 9 },
-        { answer: "4-5", points: 10 },
-        { answer: "More than 5", points: 15 },
-      ]
-    },
-    {
-      type: 'single',
-      question: "What is your favorite music genre?",
-      options: [
-        { answer: "Pop", points: 10 },
-        { answer: "Rock", points: 10 },
-        { answer: "Hip Hop", points: 10 },
-        { answer: "Jazz", points: 10 },
-        { answer: "Classical", points: 10 },
-        { answer: "Electronic", points: 10 },
-        { answer: "I love everything form Pop to Electronic", points: 25 }
-      ]
-    },
-    {
-      type: 'single',
       question: "Do you prefer listening to music alone or with others?",
       options: [
         { answer: "Alone", points: 12 },
@@ -94,8 +69,8 @@ const MusicPoll = () => {
       type: 'single',
       question: "Do you prefer digital or physical music formats?",
       options: [
-        { answer: "Digital", points: 0 },
-        { answer: "Physical", points: 0 }
+        { answer: "Digital", points: 10 },
+        { answer: "Physical", points: 25 }
       ]
     },
     {
@@ -161,11 +136,11 @@ const MusicPoll = () => {
 
   const getType = () => {
     const score = calculateScore();
-    if (score < 30) {
+    if (score < 15) {
       return "Not a music lover";
-    } else if (score < 50) {
+    } else if (score < 35) {
       return "Moderate music lover";
-    } else if (score < 70) {
+    } else if (score < 55) {
       return "Passionate music lover";
     } else {
       return "Hardcore music lover";
@@ -180,7 +155,7 @@ const MusicPoll = () => {
         <div className="poll-results">
           <h4>Your music lover type: <em>{getType()}</em></h4>
           <h5>Your score: {calculateScore()}</h5>
-          <p>Thank you for your attention{userName ? `, ${userName}` : ''}!</p>
+          <p>Thank you for your attention{userName ? `, ${userName}` : ''}</p>
           <button onClick={() => {
             setShowResults(false);
             setAnswers({});
