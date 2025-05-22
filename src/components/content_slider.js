@@ -18,10 +18,6 @@ function ContentSlider() {
     return () => clearInterval(interval);
   }, [currentIndex]);
 
-  // const nextImage = () => {
-  //   setCurrentIndex((prev) => (prev + 1) % contentImages.length);
-  // };
-
 return (
     <section className="content-slider">
       <div className="slider-container">

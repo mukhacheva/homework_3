@@ -28,7 +28,7 @@ const MusicPoll = () => {
       question: "Do you enjoy creating playlists based on your mood?",
       options: [
         { answer: "Yes", points: 10 },
-        { answer: "No", points: 5 },
+        { answer: "No", points: 2 },
         { answer: "No, but I like when other people create them for me", points: 10 }
       ]
     },
@@ -37,7 +37,7 @@ const MusicPoll = () => {
       question: "Do you prefer listening to music alone or with others?",
       options: [
         { answer: "Alone", points: 12 },
-        { answer: "With others", points: 10 }
+        { answer: "With others", points: 7 }
       ]
     },
     {
@@ -45,7 +45,7 @@ const MusicPoll = () => {
       question: "Do you listen to music while working or studying?",
       options: [
         { answer: "Yes", points: 7 },
-        { answer: "No", points: 5 }
+        { answer: "No", points: 2 }
       ]
     },
     {
@@ -54,7 +54,7 @@ const MusicPoll = () => {
       options: [
         { answer: "Yes", points: 3 },
         { answer: "No, I know what I like", points: 4 },
-        { answer: "No", points: 2 }
+        { answer: "No", points: 0 }
       ]
     },
     {
@@ -62,7 +62,7 @@ const MusicPoll = () => {
       question: "Do you like attending live music events?",
       options: [
         { answer: "Yes", points: 2 },
-        { answer: "No", points: 1 }
+        { answer: "No", points: 0 }
       ]
     },
     {
@@ -77,10 +77,10 @@ const MusicPoll = () => {
       type: 'single',
       question: "How often do you listen to music?",
       options: [
-        { answer: "Every day", points: 5 },
+        { answer: "Every day", points: 8 },
         { answer: "Several times a week", points: 4 },
         { answer: "Once a week", points: 3 },
-        { answer: "Rarely", points: 2 }
+        { answer: "Rarely", points: 1 }
       ]
     },
     {
@@ -131,7 +131,7 @@ const MusicPoll = () => {
         totalScore += answer.points;
       }
     });
-    return Math.min(totalScore, 100);
+    return Math.min(totalScore, 88);
   };
 
   const getType = () => {
