@@ -28,7 +28,7 @@ const MusicPoll = () => {
       question: "Do you enjoy creating playlists based on your mood?",
       options: [
         { answer: "Yes", points: 10 },
-        { answer: "No", points: 2 },
+        { answer: "No", points: 0 },
         { answer: "No, but I like when other people create them for me", points: 10 }
       ]
     },
@@ -37,7 +37,7 @@ const MusicPoll = () => {
       question: "Do you prefer listening to music alone or with others?",
       options: [
         { answer: "Alone", points: 12 },
-        { answer: "With others", points: 7 }
+        { answer: "With others", points: 6 }
       ]
     },
     {
@@ -45,7 +45,7 @@ const MusicPoll = () => {
       question: "Do you listen to music while working or studying?",
       options: [
         { answer: "Yes", points: 7 },
-        { answer: "No", points: 2 }
+        { answer: "No", points: 0 }
       ]
     },
     {
@@ -69,7 +69,7 @@ const MusicPoll = () => {
       type: 'single',
       question: "Do you prefer digital or physical music formats?",
       options: [
-        { answer: "Digital", points: 10 },
+        { answer: "Digital", points: 5 },
         { answer: "Physical", points: 25 }
       ]
     },
@@ -80,7 +80,7 @@ const MusicPoll = () => {
         { answer: "Every day", points: 8 },
         { answer: "Several times a week", points: 4 },
         { answer: "Once a week", points: 3 },
-        { answer: "Rarely", points: 1 }
+        { answer: "Rarely", points: 0 }
       ]
     },
     {
