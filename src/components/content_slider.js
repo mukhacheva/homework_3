@@ -13,12 +13,12 @@ function ContentSlider() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      nextImage();
+      setCurrentIndex(prevIndex => (prevIndex + 1) % contentImages.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [currentIndex]);
+  }, []);
 
-return (
+  return (
     <section className="content-slider">
       <div className="slider-container">
         {contentImages.map((img, index) => (
@@ -30,8 +30,8 @@ return (
           />
         ))}
       </div>
-  
     </section>
   );
-};
+}
+
 export default ContentSlider;

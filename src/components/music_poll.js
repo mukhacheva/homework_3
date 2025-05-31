@@ -104,13 +104,13 @@ const MusicPoll = () => {
     setAnswers(prev => ({ ...prev, [currentQ]: { value, points } }));
   };
 
-  const handleMultiChange = (option) => {
-    const selected = answers[currentQ] || [];
-    const updated = selected.includes(option)
-      ? selected.filter(o => o !== option)
-      : [...selected, option];
-    handleAnswer(updated);
-  };
+  // const handleMultiChange = (option) => {
+  //   const selected = answers[currentQ] || [];
+  //   const updated = selected.includes(option)
+  //     ? selected.filter(o => o !== option)
+  //     : [...selected, option];
+  //   handleAnswer(updated);
+  // };
 
   const handleSubmit = () => setShowResults(true);
 
@@ -136,7 +136,7 @@ const MusicPoll = () => {
 
   const getType = () => {
     const score = calculateScore();
-    if (score < 15) {
+    if (score < 18) {
       return "Not a music lover";
     } else if (score < 35) {
       return "Moderate music lover";
@@ -181,7 +181,7 @@ const MusicPoll = () => {
                   </button>
                 ))}
 
-              {questions[currentQ].type === 'multi' &&
+              {/* {questions[currentQ].type === 'multi' &&
                 questions[currentQ].options.map((opt, i) => (
                   <label key={i}>
                     <input
@@ -191,7 +191,7 @@ const MusicPoll = () => {
                     />
                     {opt}
                   </label>
-                ))}
+                ))} */}
 
               {questions[currentQ].type === 'text' && (
                 <textarea

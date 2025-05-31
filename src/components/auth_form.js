@@ -66,7 +66,6 @@ function ContactForm() {
       digits = '7' + digits;
     }
 
-    
     if (digits.startsWith('8')) {
       digits = '7' + digits.slice(1);
     }
@@ -109,6 +108,7 @@ function ContactForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const newErrors = {};
     Object.entries(formData).forEach(([key, value]) => {
       const error = validateField(key, value);
@@ -118,8 +118,29 @@ function ContactForm() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      setIsModalOpen(true);
-      setFormData({ name: '', phone: '', email: '', message: '' });
+      // Отправляем данные на сервер
+      fetch('https://webhook.site/9ab99e89-28b9-4023-9d83-6d4620f825a5', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log('Success:', data);
+          setIsModalOpen(true);
+          setFormData({ name: '', phone: '', email: '', message: '' });
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          alert('Something went wrong. Please try again later.');
+        });
     }
   };
 
@@ -146,7 +167,7 @@ function ContactForm() {
                 placeholder="Phone"
                 value={formData.phone}
                 onChange={handleChange}
-                maxLength={18} 
+                maxLength={18}
               />
               {errors.phone && <span className="error">{errors.phone}</span>}
             </div>
