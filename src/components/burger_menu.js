@@ -88,8 +88,8 @@ function BurgerMenu() {
                 account
               </a>
               <ul className={`dropdown-menu ${activeDropdown === 'account' ? 'active' : ''}`}>
-                <li><a href="#">registration</a></li>
-                <li><a href="#">login</a></li>
+                <li><Link to="/registration">registration</Link></li>
+                <li><Link to="/login">login</Link></li>
                 <li><a href="#">forgot password</a></li>
                 <li><a href="#">need help</a></li>
               </ul>
