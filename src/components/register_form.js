@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from './modal';
 import '../styles/register_form.css';
+import { registerUser } from '../api/user';
 
 function RegistrationForm() {
   const [formData, setFormData] = useState({
@@ -129,8 +130,9 @@ function RegistrationForm() {
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const newErrors = {};
     Object.entries(formData).forEach(([key, value]) => {
       const error = validateField(key, value);
@@ -140,15 +142,37 @@ function RegistrationForm() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      setIsModalOpen(true);
-      setFormData({
-        email: '',
-        username: '',
-        password: '',
-        confirmPassword: '',
-        phone: '',
-        birth_date: ''
-      });
+      // Формируем данные для отправки (без confirmPassword)
+      const dataToSend = {
+        email: formData.email,
+        username: formData.username,
+        password: formData.password,
+        phone: formData.phone.replace(/\D/g, ''), // очищаем от скобок и тире
+        birth_date: formData.birth_date.split('.').reverse().join('-') // в ISO формат
+      };
+
+      try {
+        await registerUser(dataToSend);
+        setIsModalOpen(true);
+        setFormData({
+          email: '',
+          username: '',
+          password: '',
+          confirmPassword: '',
+          phone: '',
+          birth_date: ''
+        });
+      } catch (err) {
+        if (err.response?.data) {
+          const apiErrors = {};
+          for (const key in err.response.data) {
+            apiErrors[key] = err.response.data[key][0];
+          }
+          setErrors(apiErrors);
+        } else {
+          alert('Something went wrong!');
+        }
+      }
     }
   };
 
