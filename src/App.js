@@ -8,6 +8,8 @@ import MusicPoll from './pages/poll'; //Страница с опросом
 import RegistrationPage from './pages/registration'; //Страница с регистрацией
 import LoginPage from './pages/login'; //Страница со входом
 
+import MyPage from './pages/my_page'; //Личный кабинет
+
 function App() {
   return (
     <Router>
@@ -26,6 +28,10 @@ function App() {
 
         {/* Страница входа */}
         <Route path="/login" element={<LoginPage />} />
+
+
+        {/* Страница кабинета */}
+        <Route path="/my_page" element={<MyPage />} />
 
       </Routes>
     </Router>

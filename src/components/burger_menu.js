@@ -91,7 +91,7 @@ function BurgerMenu() {
                 <li><Link to="/registration">registration</Link></li>
                 <li><Link to="/login">login</Link></li>
                 <li><a href="#">forgot password</a></li>
-                <li><a href="#">need help</a></li>
+                <li><Link to="/my_page">need help</Link></li>
               </ul>
             </li>
           </ul>

@@ -1,11 +1,11 @@
 .auth_form {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Центрирует содержимое по горизонтали */
+    align-items: center; 
     justify-content: center;
-    max-width: 400px; /* Ограничивает ширину формы */
+    max-width: 400px; 
     width: 100%;
-    margin: 0 auto; /* Центрирует форму */
+    margin: 0 auto; 
 }
 
 .form_row {

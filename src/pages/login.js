@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/page.css';
+import '../styles/registr_login.css';
 import { Link } from 'react-router-dom'; 
 
 import BurgerMenu from '../components/burger_menu.js';
@@ -13,10 +13,15 @@ export default function Home() {
       <ContentSlider/>
     
     <main>
-      <div className='block_name'>
-        <h1>LOGIN</h1>
+    <div className='ipa'>
+      <div className='registration_wrapper'>
+        <div className='block_name'>
+          <h1>LOGIN</h1>
+        </div>
+        <LoginForm/>
       </div>
-      <LoginForm/>
+    </div> 
+    
     </main>
       <footer>
         <nav className="foot_nav">
