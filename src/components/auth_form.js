@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+// src/components/auth_form.js
+import React, { useState } from 'react';
 import Modal from './modal';
-import '../styles/auth_form.css'; 
+import { sendContactForm } from '../api/user';
+import '../styles/auth_form.css';
 
 function ContactForm() {
   const [formData, setFormData] = useState({
@@ -12,15 +14,6 @@ function ContactForm() {
 
   const [errors, setErrors] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    setFormData({
-      name: 'Kyle Gallner',
-      phone: '+7(987)654-32-10',
-      email: 'kylegallner@gmail.com',
-      message: 'Hello, I love your site!'
-    });
-  }, []);
 
   const validateField = (name, value) => {
     let error = '';
@@ -115,8 +108,9 @@ function ContactForm() {
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const newErrors = {};
     Object.entries(formData).forEach(([key, value]) => {
       const error = validateField(key, value);
@@ -126,13 +120,19 @@ function ContactForm() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      setIsModalOpen(true);
-      setFormData({
-        name: '',
-        phone: '',
-        email: '',
-        message: ''
-      });
+      try {
+        await sendContactForm(formData);
+        setIsModalOpen(true);
+        setFormData({
+          name: '',
+          phone: '',
+          email: '',
+          message: ''
+        });
+      } catch (err) {
+        alert('Ошибка при отправке сообщения');
+        console.error(err);
+      }
     }
   };
 

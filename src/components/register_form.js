@@ -5,12 +5,12 @@ import { registerUser } from '../api/user';
 
 function RegistrationForm() {
   const [formData, setFormData] = useState({
-    email: 'katya@example.com',
-    username: 'Katya',
-    password: 'password123',
-    confirmPassword: 'password123',
-    phone: '+7(999)123-45-67',
-    birth_date: '01.01.2000'
+    email: '',
+    username: '',
+    password: '',
+    confirmPassword: '',
+    phone: '',
+    birth_date: ''
   });
 
   const [errors, setErrors] = useState({});
