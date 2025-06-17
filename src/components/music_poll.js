@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import '../styles/music_poll.css';
 
+const genres = ['Rock', 'Pop', 'Jazz', 'Hip-hop', 'Classical'];
+
 const MusicPoll = () => {
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -14,105 +16,57 @@ const MusicPoll = () => {
     },
     {
       type: 'single',
-      question: "How old are you?",
+      question: "Which instrument do you prefer to listen to?",
       options: [
-        { answer: "Under 18", points: 3 },
-        { answer: "19-21", points: 8 },
-        { answer: "22-27", points: 9 },
-        { answer: "28-36", points: 10 },
-        { answer: "Over 36", points: 15 },
+        { answer: "Electric guitar", points: { Rock: 3, Pop: 1, Jazz: 2, "Hip-hop": 0, Classical: 0 } },
+        { answer: "Synthesizer/Keyboard", points: { Pop: 3, "Hip-hop": 2, Jazz: 1, Rock: 0, Classical: 0 } },
+        { answer: "Violin or piano", points: { Classical: 3, Jazz: 2, Pop: 0, Rock: 0, "Hip-hop": 0 } },
       ]
     },
     {
       type: 'single',
-      question: "Do you enjoy creating playlists based on your mood?",
+      question: "What kind of rhythm do you enjoy most?",
       options: [
-        { answer: "Yes", points: 10 },
-        { answer: "No", points: 0 },
-        { answer: "No, but I like when other people create them for me", points: 10 }
+        { answer: "Strong, fast beats", points: { Rock: 3, "Hip-hop": 3, Pop: 1, Jazz: 0, Classical: 0 } },
+        { answer: "Smooth and flowing", points: { Jazz: 3, Classical: 2, Pop: 1, Rock: 0, "Hip-hop": 0 } },
+        { answer: "Catchy and repetitive", points: { Pop: 3, "Hip-hop": 2, Rock: 1, Jazz: 0, Classical: 0 } },
       ]
     },
     {
       type: 'single',
-      question: "Do you prefer listening to music alone or with others?",
+      question: "Which setting do you prefer to listen to music in?",
       options: [
-        { answer: "Alone", points: 12 },
-        { answer: "With others", points: 6 }
+        { answer: "Loud concert or festival", points: { Rock: 3, "Hip-hop": 2, Pop: 1, Jazz: 0, Classical: 0 } },
+        { answer: "Chill lounge or cafe", points: { Jazz: 3, Classical: 2, Pop: 1, "Hip-hop": 0, Rock: 0 } },
+        { answer: "At home or in the car", points: { Pop: 3, "Hip-hop": 2, Rock: 1, Jazz: 0, Classical: 0 } },
       ]
     },
     {
       type: 'single',
-      question: "Do you listen to music while working or studying?",
+      question: "Which theme do you like most in songs?",
       options: [
-        { answer: "Yes", points: 7 },
-        { answer: "No", points: 0 }
+        { answer: "Rebellion and freedom", points: { Rock: 3, "Hip-hop": 2, Pop: 1, Jazz: 0, Classical: 0 } },
+        { answer: "Love and relationships", points: { Pop: 3, Jazz: 1, Classical: 1, Rock: 0, "Hip-hop": 0 } },
+        { answer: "Complex emotions or stories", points: { Classical: 3, Jazz: 2, Rock: 1, Pop: 0, "Hip-hop": 0 } },
       ]
     },
     {
       type: 'single',
-      question: "Do you like discovering new artists?",
+      question: "Which artist would you rather listen to?",
       options: [
-        { answer: "Yes", points: 3 },
-        { answer: "No, I know what I like", points: 4 },
-        { answer: "No", points: 0 }
+        { answer: "The Beatles or Led Zeppelin", points: { Rock: 3, Pop: 1, Jazz: 0, "Hip-hop": 0, Classical: 0 } },
+        { answer: "Beyoncé or Michael Jackson", points: { Pop: 3, "Hip-hop": 2, Rock: 0, Jazz: 0, Classical: 0 } },
+        { answer: "Miles Davis or Yo-Yo Ma", points: { Jazz: 3, Classical: 3, Pop: 0, Rock: 0, "Hip-hop": 0 } },
       ]
-    },
-    {
-      type: 'single',
-      question: "Do you like attending live music events?",
-      options: [
-        { answer: "Yes", points: 2 },
-        { answer: "No", points: 0 }
-      ]
-    },
-    {
-      type: 'single',
-      question: "Do you prefer digital or physical music formats?",
-      options: [
-        { answer: "Digital", points: 5 },
-        { answer: "Physical", points: 25 }
-      ]
-    },
-    {
-      type: 'single',
-      question: "How often do you listen to music?",
-      options: [
-        { answer: "Every day", points: 8 },
-        { answer: "Several times a week", points: 4 },
-        { answer: "Once a week", points: 3 },
-        { answer: "Rarely", points: 0 }
-      ]
-    },
-    {
-      type: 'single',
-      question: "Do you follow music charts?",
-      options: [
-        { answer: "Yes", points: 5 },
-        { answer: "No", points: 0 }
-      ]
-    },
-    {
-      type: 'text',
-      question: "Do you have any favorite artists or bands? Please mention them."
     }
   ];
 
-  const handleAnswer = (value, points = 0) => {
+  const handleAnswer = (value, points = {}) => {
     if (currentQ === 0) {
       setUserName(value);
     }
     setAnswers(prev => ({ ...prev, [currentQ]: { value, points } }));
   };
-
-  // const handleMultiChange = (option) => {
-  //   const selected = answers[currentQ] || [];
-  //   const updated = selected.includes(option)
-  //     ? selected.filter(o => o !== option)
-  //     : [...selected, option];
-  //   handleAnswer(updated);
-  // };
-
-  const handleSubmit = () => setShowResults(true);
 
   const isAnswered = () => {
     const ans = answers[currentQ];
@@ -123,39 +77,40 @@ const MusicPoll = () => {
         : !!ans;
   };
 
-  const calculateScore = () => {
-    let totalScore = 0;
+  const calculateScores = () => {
+    const totalScores = genres.reduce((acc, genre) => ({ ...acc, [genre]: 0 }), {});
     questions.forEach((question, index) => {
       const answer = answers[index];
       if (answer && question.type === 'single') {
-        totalScore += answer.points;
+        genres.forEach(g => {
+          totalScores[g] += answer.points[g] || 0;
+        });
       }
     });
-    return Math.min(totalScore, 88);
+    return totalScores;
   };
 
-  const getType = () => {
-    const score = calculateScore();
-    if (score < 18) {
-      return "Not a music lover";
-    } else if (score < 35) {
-      return "Moderate music lover";
-    } else if (score < 55) {
-      return "Passionate music lover";
-    } else {
-      return "Hardcore music lover";
-    }
+  const getFavoriteGenre = () => {
+    const scores = calculateScores();
+    const maxPoints = Math.max(...Object.values(scores));
+    const topGenres = Object.entries(scores)
+      .filter(([_, v]) => v === maxPoints)
+      .map(([k]) => k);
+    return topGenres[0] || 'No genre';
+  };
+
+  const handleSubmit = () => {
+    setShowResults(true);
   };
 
   return (
     <div className="music-poll">
-      <h3>What's your music lover type?</h3>
+      <h3>What's your favourite genre?</h3>
 
       {showResults ? (
         <div className="poll-results">
-          <h4>Your music lover type: <em>{getType()}</em></h4>
-          <h5>Your score: {calculateScore()}</h5>
-          <p>Thank you for your attention{userName ? `, ${userName}` : ''}</p>
+          <h4>Hi{userName ? `, ${userName}` : ''}!</h4>
+          <h4>Your favorite music genre: <em>{getFavoriteGenre()}</em></h4>
           <button onClick={() => {
             setShowResults(false);
             setAnswers({});
@@ -179,27 +134,15 @@ const MusicPoll = () => {
                   >
                     {opt.answer}
                   </button>
-                ))}
-
-              {/* {questions[currentQ].type === 'multi' &&
-                questions[currentQ].options.map((opt, i) => (
-                  <label key={i}>
-                    <input
-                      type="checkbox"
-                      checked={(answers[currentQ] || []).includes(opt)}
-                      onChange={() => handleMultiChange(opt)}
-                    />
-                    {opt}
-                  </label>
-                ))} */}
-
+                ))
+              }
               {questions[currentQ].type === 'text' && (
                 <textarea
-                  rows="4"
+                  rows="2"
                   cols="40"
                   value={answers[currentQ]?.value || ''}
-                  onChange={(e) => handleAnswer(e.target.value, 0)}
-                  placeholder="Enter your answerrrr..."
+                  onChange={(e) => handleAnswer(e.target.value, {})}
+                  placeholder="Enter your answer..."
                 />
               )}
             </div>

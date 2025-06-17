@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/login_form.css';
 
 function LoginForm() {
@@ -8,6 +8,14 @@ function LoginForm() {
   });
 
   const [errors, setErrors] = useState({});
+
+  // ВРЕМЕННЫЕ ДАННЫЕ
+  useEffect(() => {
+    setFormData({
+      nickname: 'KyleGallner2025',
+      password: 'SecretPass123!'
+    });
+  }, []);
 
   const validateField = (name, value) => {
     let error = '';
@@ -51,7 +59,7 @@ function LoginForm() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      // Replace with your login logic
+      // 
       console.log('Logging in with', formData);
     }
   };

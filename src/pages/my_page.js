@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../styles/my_page.css';
 import { Link } from 'react-router-dom';
 import BurgerMenu from '../components/burger_menu.js';
@@ -8,22 +8,35 @@ import road_sign from '../img/sign.png';
 import cd from '../img/cd.png';
 
 export default function Home() {
-  // Временные данные
   const [userData, setUserData] = useState({
     username: 'Katya',
     email: 'katya@example.com',
     phone: '+7 999 123 45 67',
     genre: 'rock',
     birth_date: '01.01.2000',
-    subscription: true
+    subscription: true,
   });
 
-  useEffect(() => {
-    // fetch('/api/userdata')
-    //   .then(res => res.json())
-    //   .then(data => setUserData(data))
-    //   .catch(err => console.error(err));
-  }, []);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({ ...userData });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const handleSave = () => {
+    setUserData(formData);
+    setEditMode(false);
+  };
+
+  const handleCancel = () => {
+    setFormData({ ...userData });
+    setEditMode(false);
+  };
 
   return (
     <div>
@@ -34,13 +47,90 @@ export default function Home() {
           <div className="info_block hello">
             <h1>Hello, {userData.username}!</h1>
             <p>It's you:</p>
-            <ul>
-              <li>{userData.email}</li>
-              <li>{userData.phone}</li>
-              <li>{userData.genre}</li>
-              <li>{userData.birth_date}</li>
-              <li>Subscription: {userData.subscription ? '1' : '0'}</li>
-            </ul>
+
+            {!editMode ? (
+              <>
+                <ul>
+                  <li>{userData.email}</li>
+                  <li>{userData.phone}</li>
+                  <li>{userData.genre}</li>
+                  <li>{userData.birth_date}</li>
+                  <li>Subscription: {userData.subscription ? '1' : '0'}</li>
+                </ul>
+
+                <button
+                  type="button"
+                  className="edit-btn"
+                  onClick={() => {
+                    setFormData({ ...userData });
+                    setEditMode(true);
+                  }}
+                >
+                  Change data
+                </button>
+              </>
+            ) : (
+              <form className="edit-form" onSubmit={(e) => e.preventDefault()}>
+                <label>
+                  Email: <br />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </label>
+
+                <label>
+                  Phone: <br />
+                  <input
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                  />
+                </label>
+
+                <label>
+                  Genre: <br />
+                  <input
+                    type="text"
+                    name="genre"
+                    value={formData.genre}
+                    onChange={handleChange}
+                  />
+                </label>
+
+                <label>
+                  Birth Date: <br />
+                  <input
+                    type="text"
+                    name="birth_date"
+                    value={formData.birth_date}
+                    onChange={handleChange}
+                  />
+                </label>
+
+                <label>
+                  Subscription: <br />
+                  <input
+                    type="checkbox"
+                    name="subscription"
+                    checked={formData.subscription}
+                    onChange={handleChange}
+                  />
+                </label>
+
+                <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
+                  <button type="button" onClick={handleSave} className="save-btn">
+                    Save
+                  </button>
+                  <button type="button" onClick={handleCancel} className="cancel-btn">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
 

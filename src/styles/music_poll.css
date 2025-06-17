@@ -16,7 +16,6 @@
   margin-bottom: 40px;
 }
 
-
 .poll-question {
   flex: 1;
   overflow-y: auto;
@@ -25,7 +24,7 @@
 .poll-question p {
   font-size: 18px;
   margin-bottom: 10px;
-  color: #555;
+  color: #555 !important;
 }
 
 .poll-options {
@@ -38,7 +37,7 @@ button {
   padding: 10px 20px;
   font-size: 16px;
   border: none;
-  background-color: #434c57;
+  background-color: #434c57 !important;
   color: white;
   border-radius: 5px;
   cursor: pointer;
@@ -46,16 +45,16 @@ button {
 }
 
 button:hover {
-  background-color: #192129;
+  background-color: #192129 !important;
 }
 
 button:disabled {
-  background-color: #8f8f8f;
+  background-color: #8f8f8f !important;
   cursor: not-allowed;
 }
 
 .selected {
-  background-color: #256f36;
+  background-color: #256f36 !important;
 }
 
 .poll-nav {
@@ -74,13 +73,13 @@ textarea {
 }
 
 .submit-btn {
-  background-color: #296136;
+  background-color: #296136 !important;
 }
 
 .poll-results {
   text-align: center;
   padding: 20px;
-  background-color: #f0f8ff;
+  background-color: #f0f8ff !important;
   border-radius: 8px;
   overflow-y: auto;
   height: 100%;
@@ -88,27 +87,27 @@ textarea {
 
 .poll-results h4 {
   font-size: 20px;
-  color: #333;
+  color: #333 !important;
 }
 
 .poll-results h5 {
   font-size: 18px;
-  color: #666;
+  color: #666 !important;
   margin-top: 10px;
 }
 
 .poll-results button {
   margin-top: 20px;
-  background-color: #495051;
+  background-color: #495051 !important;
 }
 
 .poll-results button:hover {
-  background-color: #202c2e;
+  background-color: #202c2e !important;
 }
 
 label {
   font-size: 16px;
-  color: #333;
+  color: #333 !important;
 }
 
 input[type="checkbox"] {

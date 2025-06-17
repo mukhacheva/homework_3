@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import Modal from './modal'; 
-import '../styles/auth_form.css';
+import React, { useState, useEffect } from 'react';
+import Modal from './modal';
+import '../styles/auth_form.css'; 
 
 function ContactForm() {
   const [formData, setFormData] = useState({
@@ -12,6 +12,15 @@ function ContactForm() {
 
   const [errors, setErrors] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    setFormData({
+      name: 'Kyle Gallner',
+      phone: '+7(987)654-32-10',
+      email: 'kylegallner@gmail.com',
+      message: 'Hello, I love your site!'
+    });
+  }, []);
 
   const validateField = (name, value) => {
     let error = '';
@@ -66,7 +75,6 @@ function ContactForm() {
       digits = '7' + digits;
     }
 
-    
     if (digits.startsWith('8')) {
       digits = '7' + digits.slice(1);
     }
@@ -119,16 +127,21 @@ function ContactForm() {
 
     if (Object.keys(newErrors).length === 0) {
       setIsModalOpen(true);
-      setFormData({ name: '', phone: '', email: '', message: '' });
+      setFormData({
+        name: '',
+        phone: '',
+        email: '',
+        message: ''
+      });
     }
   };
 
   return (
     <>
-      <div className="auth_form">
+      <div className="contact-form">
         <form onSubmit={handleSubmit}>
-          <div className="form_row">
-            <div className="input_wrapper">
+          <div className="contact-form__row">
+            <div className="contact-form__field">
               <input
                 type="text"
                 name="name"
@@ -136,24 +149,24 @@ function ContactForm() {
                 value={formData.name}
                 onChange={handleChange}
               />
-              {errors.name && <span className="error">{errors.name}</span>}
+              {errors.name && <span className="contact-form__error">{errors.name}</span>}
             </div>
 
-            <div className="input_wrapper">
+            <div className="contact-form__field">
               <input
                 type="tel"
                 name="phone"
                 placeholder="Phone"
                 value={formData.phone}
                 onChange={handleChange}
-                maxLength={18} 
+                maxLength={18}
               />
-              {errors.phone && <span className="error">{errors.phone}</span>}
+              {errors.phone && <span className="contact-form__error">{errors.phone}</span>}
             </div>
           </div>
 
-          <div className="form_row">
-            <div className="input_wrapper">
+          <div className="contact-form__row">
+            <div className="contact-form__field">
               <input
                 type="email"
                 name="email"
@@ -161,24 +174,24 @@ function ContactForm() {
                 value={formData.email}
                 onChange={handleChange}
               />
-              {errors.email && <span className="error">{errors.email}</span>}
+              {errors.email && <span className="contact-form__error">{errors.email}</span>}
             </div>
           </div>
 
-          <div className="form_row">
-            <div className="input_wrapper">
+          <div className="contact-form__row">
+            <div className="contact-form__field">
               <textarea
                 name="message"
                 placeholder="Enter your message"
                 value={formData.message}
                 onChange={handleChange}
               />
-              {errors.message && <span className="error">{errors.message}</span>}
+              {errors.message && <span className="contact-form__error">{errors.message}</span>}
             </div>
           </div>
 
-          <div className="form_row">
-            <button type="submit">Contact Us</button>
+          <div className="contact-form__row">
+            <button type="submit" className="contact-form__submit">Contact Us</button>
           </div>
         </form>
       </div>

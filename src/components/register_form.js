@@ -5,12 +5,12 @@ import { registerUser } from '../api/user';
 
 function RegistrationForm() {
   const [formData, setFormData] = useState({
-    email: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
-    birth_date: ''
+    email: 'katya@example.com',
+    username: 'Katya',
+    password: 'password123',
+    confirmPassword: 'password123',
+    phone: '+7(999)123-45-67',
+    birth_date: '01.01.2000'
   });
 
   const [errors, setErrors] = useState({});
@@ -142,13 +142,12 @@ function RegistrationForm() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      // Формируем данные для отправки (без confirmPassword)
       const dataToSend = {
         email: formData.email,
         username: formData.username,
         password: formData.password,
-        phone: formData.phone.replace(/\D/g, ''), // очищаем от скобок и тире
-        birth_date: formData.birth_date.split('.').reverse().join('-') // в ISO формат
+        phone: formData.phone.replace(/\D/g, ''),
+        birth_date: formData.birth_date.split('.').reverse().join('-')
       };
 
       try {
