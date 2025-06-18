@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/my_page.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BurgerMenu from '../components/burger_menu.js';
 
 import casset from '../img/casset.png';
 import road_sign from '../img/sign.png';
 import cd from '../img/cd.png';
 
-import  api from '../api/user';
+import api from '../api/user';
+import Modal from '../components/modal';
 
 export const getCurrentUser = () => {
   return api.get('/api/auth/users/me/');
@@ -17,12 +18,22 @@ export const updateUserData = (data) => {
   return api.put('/api/auth/users/me/', data);
 };
 
+const handleLogout = () => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  window.location.href = '/login';
+};
+
 export default function Home() {
   const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({});
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [genres, setGenres] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -43,7 +54,7 @@ export default function Home() {
           birth_date: formatDate(data.birth_date),
         });
       } catch (err) {
-        setError('Failed to load user data');
+        setShowModal(true);
       } finally {
         setLoading(false);
       }
@@ -52,20 +63,18 @@ export default function Home() {
     fetchUser();
   }, []);
 
-  const [genres, setGenres] = useState([]);
-
   useEffect(() => {
-  const fetchGenres = async () => {
-    try {
-      const response = await api.get('/genres/'); 
-      setGenres(response.data);
-    } catch (err) {
-      console.error('Failed to load genres', err);
-    }
-  };
+    const fetchGenres = async () => {
+      try {
+        const response = await api.get('/genres/');
+        setGenres(response.data);
+      } catch (err) {
+        console.error('Failed to load genres', err);
+      }
+    };
 
-  fetchGenres();
-}, []);
+    fetchGenres();
+  }, []);
 
   const formatPhone = (value) => {
     let digits = value.replace(/\D/g, '');
@@ -99,31 +108,31 @@ export default function Home() {
     }));
   };
 
-const handleSave = async () => {
-  try {
-    const toSend = {
-      ...formData,
-      phone: formData.phone.replace(/\D/g, ''), 
-      birth_date: formData.birth_date.split('.').reverse().join('-'), 
-    };
+  const handleSave = async () => {
+    try {
+      const toSend = {
+        ...formData,
+        phone: formData.phone.replace(/\D/g, ''), 
+        birth_date: formData.birth_date.split('.').reverse().join('-'),
+      };
 
-    const response = await updateUserData(toSend);
-    const updated = response.data;
+      const response = await updateUserData(toSend);
+      const updated = response.data;
 
-    const formatted = {
-      ...updated,
-      phone: formatPhone(updated.phone),
-      birth_date: formatDate(updated.birth_date),
-    };
+      const formatted = {
+        ...updated,
+        phone: formatPhone(updated.phone),
+        birth_date: formatDate(updated.birth_date),
+      };
 
-    setUserData(formatted);
-    setFormData(formatted);
-    setEditMode(false);
-  } catch (err) {
-    setError('Failed to update user data');
-    console.error(err);
-  }
-};
+      setUserData(formatted);
+      setFormData(formatted);
+      setEditMode(false);
+    } catch (err) {
+      setError('Failed to update user data');
+      console.error(err);
+    }
+  };
 
   const handleCancel = () => {
     setFormData({ ...userData });
@@ -138,106 +147,131 @@ const handleSave = async () => {
       <BurgerMenu />
 
       <main>
-        <div className="person_info">
-          <div className="info_block hello">
-            <h1>Hello, {userData.username}!</h1>
-            <p>It's you:</p>
+        {showModal && (
+          <Modal onClose={() => setShowModal(false)}>
+            <h2>You are not logged in</h2>
+            <p>
+              Please <Link to="/login">Login</Link> or{' '}
+              <Link to="/registration">Register</Link> to continue.
+            </p>
+            <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+              <button onClick={() => navigate('/login')}>Login</button>
+              <button onClick={() => navigate('/registration')}>Register</button>
+            </div>
+          </Modal>
+        )}
 
-            {!editMode ? (
-              <>
-                <ul>
-                  <li>{userData.email}</li>
-                  <li>{userData.phone}</li>
-                  <li>
-                    {
-                      genres.find((g) => g.id === userData.genre)?.genre_name
-                      || userData.genre 
-                    }
-                  </li>
-                  <li>{userData.birth_date}</li>
-                  <li>Subscription: {userData.subscription ? '1' : '0'}</li>
-                </ul>
+        {userData && (
+          <div className="person_info">
+            <div className="info_block hello">
+              <h1>Hello, {userData.username}!</h1>
+              <p>It's you:</p>
 
-                <button
-                  type="button"
-                  className="edit-btn"
-                  onClick={() => {
-                    setFormData({ ...userData });
-                    setEditMode(true);
-                  }}
-                >
-                  Change data
-                </button>
-              </>
-            ) : (
-              <form className="edit-form" onSubmit={(e) => e.preventDefault()}>
-                <label>
-                  Email: <br />
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </label>
+              {!editMode ? (
+                <>
+                  <ul>
+                    <li>{userData.phone}</li>
+                    <li>
+                      {genres.find((g) => g.id === userData.genre)?.genre_name ||
+                        userData.genre}
+                    </li>
+                    <li>{userData.birth_date}</li>
+                    <li>Subscription: {userData.subscription ? '1' : '0'}</li>
+                  </ul>
 
-                <label>
-                  Phone: <br />
-                  <input
-                    type="text"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                </label>
-
-                <label>
-                  Genre: <br />
-                  <select
-                    name="genre"
-                    value={formData.genre}
-                    onChange={handleChange}
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '10px',
+                      marginTop: '10px',
+                      alignItems: 'start',
+                    }}
                   >
-                    {genres.map((genre) => (
-                      <option key={genre.id} value={genre.id}>
-                        {genre.genre_name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                    <button
+                      type="button"
+                      className="edit-btn"
+                      onClick={() => {
+                        setFormData({ ...userData });
+                        setEditMode(true);
+                      }}
+                    >
+                      Change data
+                    </button>
 
-                <label>
-                  Birth Date: <br />
-                  <input
-                    type="text"
-                    name="birth_date"
-                    value={formData.birth_date}
-                    onChange={handleChange}
-                  />
-                </label>
+                    <div className="logout_style">
+                      <button
+                        type="button"
+                        className="logout-btn"
+                        onClick={handleLogout}
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <form className="edit-form" onSubmit={(e) => e.preventDefault()}>
+                  {/* Убираем email из формы */}
 
-                <label>
-                  Subscription: <br />
-                  <input
-                    type="checkbox"
-                    name="subscription"
-                    checked={formData.subscription}
-                    onChange={handleChange}
-                  />
-                </label>
+                  <label>
+                    Phone: <br />
+                    <input
+                      type="text"
+                      name="phone"
+                      value={formData.phone}
+                      readOnly
+                    />
+                  </label>
 
-                <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
-                  <button type="button" onClick={handleSave} className="save-btn">
-                    Save
-                  </button>
-                  <button type="button" onClick={handleCancel} className="cancel-btn">
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            )}
+                  <label>
+                    Genre: <br />
+                    <select name="genre" value={formData.genre} onChange={handleChange}>
+                      {genres.map((genre) => (
+                        <option key={genre.id} value={genre.id}>
+                          {genre.genre_name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label>
+                    Birth Date: <br />
+                    <input
+                      type="text"
+                      name="birth_date"
+                      value={formData.birth_date}
+                      onChange={handleChange}
+                    />
+                  </label>
+
+                  <label>
+                    Subscription: <br />
+                    <input
+                      type="checkbox"
+                      name="subscription"
+                      checked={formData.subscription}
+                      onChange={handleChange}
+                    />
+                  </label>
+
+                  <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
+                    <button type="button" onClick={handleSave} className="save-btn">
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCancel}
+                      className="cancel-btn"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="white_part"></div>
 

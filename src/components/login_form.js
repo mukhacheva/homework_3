@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import '../styles/login_form.css';
 import api from '../api/user';
 import Modal from './modal'; 
@@ -15,6 +16,7 @@ function LoginForm() {
 
   const [errors, setErrors] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false); 
+  const navigate = useNavigate();
 
   const validateField = (name, value) => {
     let error = '';
@@ -74,6 +76,10 @@ function LoginForm() {
           username: '',
           password: ''
         });
+
+        setTimeout(() => {
+          navigate('/my_page');
+        }, 1000);
 
       } catch (err) {
         if (err.response?.data) {
