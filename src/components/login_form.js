@@ -1,31 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../styles/login_form.css';
+import api from '../api/user';
+import Modal from './modal'; 
+
+export const loginUser = (data) => {
+  return api.post('api/auth/jwt/create/', data);
+};
 
 function LoginForm() {
   const [formData, setFormData] = useState({
-    nickname: '',
+    username: '',
     password: ''
   });
 
   const [errors, setErrors] = useState({});
-
-  // ВРЕМЕННЫЕ ДАННЫЕ
-  useEffect(() => {
-    setFormData({
-      nickname: 'KyleGallner2025',
-      password: 'SecretPass123!'
-    });
-  }, []);
+  const [isModalOpen, setIsModalOpen] = useState(false); 
 
   const validateField = (name, value) => {
     let error = '';
 
     if (!value.trim()) {
-      error = `${name === 'nickname' ? 'Nickname' : 'Password'} is required`;
+      error = `${name === 'username' ? 'Username' : 'Password'} is required`;
     } else {
-      if (name === 'nickname') {
+      if (name === 'username') {
         if (value.length > 150) {
-          error = 'Nickname must be at most 150 characters';
+          error = 'Username must be at most 150 characters';
         }
       }
       if (name === 'password') {
@@ -47,7 +46,7 @@ function LoginForm() {
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newErrors = {};
@@ -59,45 +58,75 @@ function LoginForm() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      // 
-      console.log('Logging in with', formData);
+      try {
+        const response = await loginUser({
+          username: formData.username,
+          password: formData.password,
+        });
+        const { access, refresh } = response.data;
+
+        localStorage.setItem('access_token', access);
+        localStorage.setItem('refresh_token', refresh);
+
+        setIsModalOpen(true); 
+
+        setFormData({
+          username: '',
+          password: ''
+        });
+
+      } catch (err) {
+        if (err.response?.data) {
+          alert('Login failed: ' + JSON.stringify(err.response.data));
+        } else {
+          alert('Login failed: Unknown error');
+        }
+      }
     }
   };
 
   return (
-    <div className="auth_form">
-      <form onSubmit={handleSubmit}>
-        <div className="form_row">
-          <div className="input_wrapper">
-            <input
-              type="text"
-              name="nickname"
-              placeholder="Nickname"
-              value={formData.nickname}
-              onChange={handleChange}
-            />
-            {errors.nickname && <span className="error">{errors.nickname}</span>}
+    <>
+      <div className="auth_form">
+        <form onSubmit={handleSubmit}>
+          <div className="form_row">
+            <div className="input_wrapper">
+              <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleChange}
+              />
+              {errors.username && <span className="error">{errors.username}</span>}
+            </div>
           </div>
-        </div>
 
-        <div className="form_row">
-          <div className="input_wrapper">
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-            {errors.password && <span className="error">{errors.password}</span>}
+          <div className="form_row">
+            <div className="input_wrapper">
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              {errors.password && <span className="error">{errors.password}</span>}
+            </div>
           </div>
-        </div>
 
-        <div className="form_row">
-          <button type="submit">Login</button>
-        </div>
-      </form>
-    </div>
+          <div className="form_row">
+            <button type="submit">Login</button>
+          </div>
+        </form>
+      </div>
+
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)}>
+          <h2>Welcome back, sunshine! (⌒‿⌒)</h2>
+        </Modal>
+      )}
+    </>
   );
 }
 

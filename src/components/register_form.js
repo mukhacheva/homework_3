@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import Modal from './modal';
 import '../styles/register_form.css';
-import { registerUser } from '../api/user';
+import  api from '../api/user';
+
+export const registerUser = (data) => {
+  return api.post('/api/auth/users/', data);
+};
 
 function RegistrationForm() {
   const [formData, setFormData] = useState({

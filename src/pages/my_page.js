@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/my_page.css';
 import { Link } from 'react-router-dom';
 import BurgerMenu from '../components/burger_menu.js';
@@ -7,18 +7,89 @@ import casset from '../img/casset.png';
 import road_sign from '../img/sign.png';
 import cd from '../img/cd.png';
 
-export default function Home() {
-  const [userData, setUserData] = useState({
-    username: 'Katya',
-    email: 'katya@example.com',
-    phone: '+7 999 123 45 67',
-    genre: 'rock',
-    birth_date: '01.01.2000',
-    subscription: true,
-  });
+import  api from '../api/user';
 
+export const getCurrentUser = () => {
+  return api.get('/api/auth/users/me/');
+};
+
+export const updateUserData = (data) => {
+  return api.put('/api/auth/users/me/', data);
+};
+
+export default function Home() {
+  const [userData, setUserData] = useState(null);
+  const [formData, setFormData] = useState({});
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({ ...userData });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await getCurrentUser();
+        const data = response.data;
+
+        const formattedPhone = formatPhone(data.phone || '');
+
+        setUserData({
+          ...data,
+          phone: formattedPhone,
+          birth_date: formatDate(data.birth_date),
+        });
+        setFormData({
+          ...data,
+          phone: formattedPhone,
+          birth_date: formatDate(data.birth_date),
+        });
+      } catch (err) {
+        setError('Failed to load user data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const [genres, setGenres] = useState([]);
+
+  useEffect(() => {
+  const fetchGenres = async () => {
+    try {
+      const response = await api.get('/genres/'); 
+      setGenres(response.data);
+    } catch (err) {
+      console.error('Failed to load genres', err);
+    }
+  };
+
+  fetchGenres();
+}, []);
+
+  const formatPhone = (value) => {
+    let digits = value.replace(/\D/g, '');
+    if (digits.length === 10 && digits.startsWith('9')) {
+      digits = '7' + digits;
+    }
+    if (digits.startsWith('8')) {
+      digits = '7' + digits.slice(1);
+    }
+
+    let formatted = '+7';
+    if (digits.length >= 1) formatted += '(' + digits.slice(1, 4);
+    if (digits.length >= 4) formatted += ') ' + digits.slice(4, 7);
+    if (digits.length >= 7) formatted += '-' + digits.slice(7, 9);
+    if (digits.length >= 9) formatted += '-' + digits.slice(9, 11);
+
+    return formatted;
+  };
+
+  const formatDate = (isoDate) => {
+    if (!isoDate) return '';
+    const [year, month, day] = isoDate.split('-');
+    return `${day}.${month}.${year}`;
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -28,15 +99,39 @@ export default function Home() {
     }));
   };
 
-  const handleSave = () => {
-    setUserData(formData);
+const handleSave = async () => {
+  try {
+    const toSend = {
+      ...formData,
+      phone: formData.phone.replace(/\D/g, ''), 
+      birth_date: formData.birth_date.split('.').reverse().join('-'), 
+    };
+
+    const response = await updateUserData(toSend);
+    const updated = response.data;
+
+    const formatted = {
+      ...updated,
+      phone: formatPhone(updated.phone),
+      birth_date: formatDate(updated.birth_date),
+    };
+
+    setUserData(formatted);
+    setFormData(formatted);
     setEditMode(false);
-  };
+  } catch (err) {
+    setError('Failed to update user data');
+    console.error(err);
+  }
+};
 
   const handleCancel = () => {
     setFormData({ ...userData });
     setEditMode(false);
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div>
@@ -53,7 +148,12 @@ export default function Home() {
                 <ul>
                   <li>{userData.email}</li>
                   <li>{userData.phone}</li>
-                  <li>{userData.genre}</li>
+                  <li>
+                    {
+                      genres.find((g) => g.id === userData.genre)?.genre_name
+                      || userData.genre 
+                    }
+                  </li>
                   <li>{userData.birth_date}</li>
                   <li>Subscription: {userData.subscription ? '1' : '0'}</li>
                 </ul>
@@ -93,12 +193,17 @@ export default function Home() {
 
                 <label>
                   Genre: <br />
-                  <input
-                    type="text"
+                  <select
                     name="genre"
                     value={formData.genre}
                     onChange={handleChange}
-                  />
+                  >
+                    {genres.map((genre) => (
+                      <option key={genre.id} value={genre.id}>
+                        {genre.genre_name}
+                      </option>
+                    ))}
+                  </select>
                 </label>
 
                 <label>

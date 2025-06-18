@@ -1,15 +1,16 @@
 // src/components/auth_form.js
 import React, { useState } from 'react';
 import Modal from './modal';
-import { sendContactForm } from '../api/user';
 import '../styles/auth_form.css';
+
+import api from '../api/user'; // путь поправь, если нужно
 
 function ContactForm() {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     email: '',
-    message: ''
+    text: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -108,6 +109,10 @@ function ContactForm() {
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
+  const sendContactForm = async (data) => {
+    return api.post('/contact/', data);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -116,23 +121,33 @@ function ContactForm() {
       const error = validateField(key, value);
       if (error) newErrors[key] = error;
     });
-
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      try {
-        await sendContactForm(formData);
-        setIsModalOpen(true);
-        setFormData({
-          name: '',
-          phone: '',
-          email: '',
-          message: ''
-        });
-      } catch (err) {
-        alert('Ошибка при отправке сообщения');
-        console.error(err);
+    if (Object.keys(newErrors).length > 0) return;
+
+    try {
+      await sendContactForm(formData);
+      setIsModalOpen(true);
+      setFormData({
+        name: '',
+        phone: '',
+        email: '',
+        text: '',
+      });
+    } catch (error) {
+      const data = error.response?.data;
+      let errorMessage = 'Ошибка при отправке сообщения';
+      if (data) {
+        const firstKey = Object.keys(data)[0];
+        const firstError = data[firstKey];
+        if (Array.isArray(firstError)) {
+          errorMessage = `${firstKey}: ${firstError[0]}`;
+        } else if (typeof firstError === 'string') {
+          errorMessage = `${firstKey}: ${firstError}`;
+        }
       }
+      alert(errorMessage);
+      console.error(error);
     }
   };
 
@@ -181,9 +196,9 @@ function ContactForm() {
           <div className="contact-form__row">
             <div className="contact-form__field">
               <textarea
-                name="message"
+                name="text"
                 placeholder="Enter your message"
-                value={formData.message}
+                value={formData.text}
                 onChange={handleChange}
               />
               {errors.message && <span className="contact-form__error">{errors.message}</span>}
