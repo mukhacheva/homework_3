@@ -10,6 +10,8 @@ import LoginPage from './pages/login'; //Страница со входом
 
 import MyPage from './pages/my_page'; //Личный кабинет
 
+import NewsPage from './pages/news'; //Страница с новостями
+
 function App() {
   return (
     <Router>
@@ -32,6 +34,9 @@ function App() {
 
         {/* Страница кабинета */}
         <Route path="/my_page" element={<MyPage />} />
+
+        {/* Страница новостей */}
+        <Route path="/news" element={<NewsPage />} />
 
       </Routes>
     </Router>
