@@ -12,6 +12,7 @@ export default function Home() {
 
   const [comments, setComments] = useState({});
   const [expandedNews, setExpandedNews] = useState({});
+  const [showAllComments, setShowAllComments] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState(null);
   const [newComment, setNewComment] = useState({});
@@ -97,6 +98,13 @@ export default function Home() {
     });
   };
 
+  const toggleShowAll = (newsId) => {
+    setShowAllComments((prev) => ({
+      ...prev,
+      [newsId]: !prev[newsId],
+    }));
+  };
+
   const handleCommentSubmit = (e, newsId) => {
     e.preventDefault();
     const text = newComment[newsId]?.trim();
@@ -135,6 +143,11 @@ export default function Home() {
       });
   };
 
+  const countTopLevelComments = (commentsList) => {
+    if (!commentsList) return 0;
+    return commentsList.length;
+  };
+
   const renderReplies = (replies, newsId, index) => {
     return replies.map((reply) => (
       <div
@@ -143,9 +156,9 @@ export default function Home() {
         style={{
           background: commentBackgrounds[(index + 1) % commentBackgrounds.length],
           marginLeft: `${index * 10}px`,
-          paddingLeft: `5px`,
-          borderLeft: `3px solid #2a9d8f`,
-          marginTop: `10px`
+          paddingLeft: '5px',
+          borderLeft: '3px solid #2a9d8f',
+          marginTop: '10px',
         }}
       >
         <p><b>{reply.author_name || 'Anonymous'}</b></p>
@@ -167,18 +180,67 @@ export default function Home() {
                 Delete
               </button>
             )}
-            {(true) && (
-              <button onClick={() =>
-                setReplyTo((prev) => ({ ...prev, [newsId]: reply.id }))
-              }>
-                Reply
-              </button>
-            )}
+            <button onClick={() =>
+              setReplyTo((prev) => ({ ...prev, [newsId]: reply.id }))
+            }>
+              Reply
+            </button>
           </div>
         )}
         {reply.replies && renderReplies(reply.replies, newsId, index + 1)}
       </div>
     ));
+  };
+
+  // Рендер комментариев верхнего уровня с ограничением по 5 штук
+  const renderCommentsWithLimit = (commentsList, newsId, index) => {
+    const showAll = showAllComments[newsId];
+    const commentsToShow = showAll ? commentsList : commentsList.slice(0, 5);
+
+    return (
+      <>
+        {commentsToShow.map((comment, i) => (
+          <div
+            key={comment.id}
+            className="comment_"
+            style={{ background: commentBackgrounds[index % commentBackgrounds.length], marginLeft: '0' }}
+          >
+            <span>{formatDate(comment.created_at)}</span>
+            <p><b>{comment.author_name}</b></p>
+
+            <p className={comment.is_deleted ? 'deleted-comment' : ''}>
+              {comment.is_deleted ? 'deleted comment' : comment.text}
+            </p>
+
+            {!comment.is_deleted && isAuthenticated && (
+              <div className="comment_actions">
+                {(comment.author == userId) && (
+                  <button onClick={() => handleDeleteComment(comment.id, newsId)}>
+                    Delete
+                  </button>
+                )}
+                <button onClick={() =>
+                  setReplyTo((prev) => ({ ...prev, [newsId]: comment.id }))
+                }>
+                  Reply
+                </button>
+              </div>
+            )}
+
+            {comment.replies && renderReplies(comment.replies, newsId, 1)}
+          </div>
+        ))}
+
+        {commentsList.length > 5 && (
+          <button
+            className="show-more-comments-btn"
+            onClick={() => toggleShowAll(newsId)}
+          >
+            {showAll ? 'Show less' : `Show more (${commentsList.length - 5} hidden)`}
+          </button>
+        )}
+      </>
+    );
   };
 
   const filteredNews = news.filter(
@@ -236,39 +298,7 @@ export default function Home() {
               <div className="comments_section_">
                 {comments[item.id] ? (
                   comments[item.id].length > 0 ? (
-                    comments[item.id].map((comment) => (
-                      <div
-                        key={comment.id}
-                        className="comment_"
-                        style={{ background: commentBackgrounds[index % commentBackgrounds.length] }}
-                      >
-                        <span>{formatDate(comment.created_at)}</span>
-                        <p><b>{comment.author_name}</b></p>
-
-                        <p className={comment.is_deleted ? 'deleted-comment' : ''}>
-                          {comment.is_deleted ? 'deleted comment' : comment.text}
-                        </p>
-
-                        {!comment.is_deleted && isAuthenticated && (
-                          <div className="comment_actions">
-                            {(comment.author == userId) && (
-                              <button onClick={() => handleDeleteComment(comment.id, item.id)}>
-                                Delete
-                              </button>
-                            )}
-                            {(true) && (
-                              <button onClick={() =>
-                                setReplyTo((prev) => ({ ...prev, [item.id]: comment.id }))
-                              }>
-                                Reply
-                              </button>
-                            )}
-                          </div>
-                        )}
-
-                        {comment.replies && renderReplies(comment.replies, item.id, index)}
-                      </div>
-                    ))
+                    renderCommentsWithLimit(comments[item.id], item.id, index)
                   ) : (
                     <p>No comments yet.</p>
                   )

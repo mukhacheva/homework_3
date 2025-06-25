@@ -12,6 +12,8 @@ import MyPage from './pages/my_page'; //Личный кабинет
 
 import NewsPage from './pages/news'; //Страница с новостями
 
+import TicketsPage from './pages/tickets'; //Страниц с покупкой билетов
+
 function App() {
   return (
     <Router>
@@ -38,6 +40,9 @@ function App() {
         {/* Страница новостей */}
         <Route path="/news" element={<NewsPage />} />
 
+        {/* Страница покупки билетов */}
+        <Route path="/tickets" element={<TicketsPage />} />
+        
       </Routes>
     </Router>
   );

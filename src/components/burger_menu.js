@@ -98,7 +98,7 @@ function BurgerMenu() {
 
           <div className="nav_side">
             <Link to="/news"><img src={shareImg} alt="Share_image" /></Link>
-            <a href="#"><img src={phoneImg} alt="Phone_image" /></a>
+            <Link to="/tickets"><img src={phoneImg} alt="Phone_image" /></Link>
           </div>
         </nav>
       </div>
