@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import '../styles/my_page.css';
 import { Link, useNavigate } from 'react-router-dom';
 import BurgerMenu from '../components/burger_menu.js';
-
 import casset from '../img/casset.png';
 import road_sign from '../img/sign.png';
 import cd from '../img/cd.png';
-
 import api from '../api/user';
 import Modal from '../components/modal';
+import axios from 'axios';
 
 export const getCurrentUser = () => api.get('/api/auth/users/me/');
 export const updateUserData = (data) => api.put('/api/auth/users/me/', data);
@@ -32,7 +31,6 @@ export default function Home() {
   const [purchases, setPurchases] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,24 +39,14 @@ export default function Home() {
         const response = await getCurrentUser();
         const data = response.data;
         const formattedPhone = formatPhone(data.phone || '');
-
-        setUserData({
-          ...data,
-          phone: formattedPhone,
-          birth_date: formatDate(data.birth_date),
-        });
-        setFormData({
-          ...data,
-          phone: formattedPhone,
-          birth_date: formatDate(data.birth_date),
-        });
+        setUserData({ ...data, phone: formattedPhone, birth_date: formatDate(data.birth_date) });
+        setFormData({ ...data, phone: formattedPhone, birth_date: formatDate(data.birth_date) });
       } catch (err) {
         setShowModal(true);
       } finally {
         setLoading(false);
       }
     };
-
     fetchUser();
   }, []);
 
@@ -71,7 +59,6 @@ export default function Home() {
         console.error('Failed to load genres', err);
       }
     };
-
     fetchGenres();
   }, []);
 
@@ -88,7 +75,6 @@ export default function Home() {
         console.error('Failed to load purchase data or tickets', err);
       }
     };
-
     fetchPurchasesAndTickets();
   }, []);
 
@@ -96,13 +82,11 @@ export default function Home() {
     let digits = value.replace(/\D/g, '');
     if (digits.length === 10 && digits.startsWith('9')) digits = '7' + digits;
     if (digits.startsWith('8')) digits = '7' + digits.slice(1);
-
     let formatted = '+7';
     if (digits.length >= 1) formatted += '(' + digits.slice(1, 4);
     if (digits.length >= 4) formatted += ') ' + digits.slice(4, 7);
     if (digits.length >= 7) formatted += '-' + digits.slice(7, 9);
     if (digits.length >= 9) formatted += '-' + digits.slice(9, 11);
-
     return formatted;
   };
 
@@ -127,16 +111,13 @@ export default function Home() {
         phone: formData.phone.replace(/\D/g, ''),
         birth_date: formData.birth_date.split('.').reverse().join('-'),
       };
-
       const response = await updateUserData(toSend);
       const updated = response.data;
-
       const formatted = {
         ...updated,
         phone: formatPhone(updated.phone),
         birth_date: formatDate(updated.birth_date),
       };
-
       setUserData(formatted);
       setFormData(formatted);
       setEditMode(false);
@@ -151,6 +132,35 @@ export default function Home() {
     setEditMode(false);
   };
 
+  const handleDeleteAccount = async () => {
+    const password = prompt("Введите ваш текущий пароль для подтверждения удаления аккаунта:");
+    if (!password) {
+      alert("Удаление отменено.");
+      return;
+    }
+    try {
+      const token = localStorage.getItem('access_token');
+      await axios.delete('http://127.0.0.1:8000/api/auth/users/me/', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        data: {
+          current_password: password,
+        },
+      });
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('Ошибка при удалении аккаунта:', error.response?.data || error);
+      alert(
+        error.response?.data?.current_password?.[0] ||
+          'Не удалось удалить аккаунт. Проверьте пароль и попробуйте снова.'
+      );
+    }
+  };
+
   const filteredPurchases = purchases.filter((purchase) => {
     const ticket = tickets.find((t) => t.id === purchase.ticket_id);
     return ticket?.event?.name?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -162,14 +172,12 @@ export default function Home() {
   return (
     <div>
       <BurgerMenu />
-
       <main>
         {showModal && (
           <Modal onClose={() => setShowModal(false)}>
             <h2>You are not logged in</h2>
             <p>
-              Please <Link to="/login">Login</Link> or{' '}
-              <Link to="/registration">Register</Link> to continue.
+              Please <Link to="/login">Login</Link> or <Link to="/registration">Register</Link> to continue.
             </p>
             <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
               <button onClick={() => navigate('/login')}>Login</button>
@@ -190,8 +198,7 @@ export default function Home() {
                     <ul>
                       <li>{userData.phone}</li>
                       <li>
-                        {genres.find((g) => g.id === userData.genre)?.genre_name ||
-                          userData.genre}
+                        {genres.find((g) => g.id === userData.genre)?.genre_name || userData.genre}
                       </li>
                       <li>{userData.birth_date}</li>
                       <li>Subscription: {userData.subscription ? '1' : '0'}</li>
@@ -209,14 +216,9 @@ export default function Home() {
                         Change data
                       </button>
 
-                      <div className="logout_style">
-                        <button
-                          type="button"
-                          className="logout-btn"
-                          onClick={handleLogout}
-                        >
-                          Logout
-                        </button>
+                      <div className="logout_style" style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                        <button type="button" className="logout-btn" onClick={handleLogout}>Logout</button>
+                        <button type="button" className="delete-btn" onClick={handleDeleteAccount}>Delete Account</button>
                       </div>
                     </div>
                   </>
@@ -226,52 +228,31 @@ export default function Home() {
                       Phone: <br />
                       <input type="text" name="phone" value={formData.phone} readOnly />
                     </label>
-
                     <label>
                       Genre: <br />
                       <select name="genre" value={formData.genre} onChange={handleChange}>
                         {genres.map((genre) => (
-                          <option key={genre.id} value={genre.id}>
-                            {genre.genre_name}
-                          </option>
+                          <option key={genre.id} value={genre.id}>{genre.genre_name}</option>
                         ))}
                       </select>
                     </label>
-
                     <label>
                       Birth Date: <br />
-                      <input
-                        type="text"
-                        name="birth_date"
-                        value={formData.birth_date}
-                        onChange={handleChange}
-                      />
+                      <input type="text" name="birth_date" value={formData.birth_date} onChange={handleChange} />
                     </label>
-
                     <label>
                       Subscription: <br />
-                      <input
-                        type="checkbox"
-                        name="subscription"
-                        checked={formData.subscription}
-                        onChange={handleChange}
-                      />
+                      <input type="checkbox" name="subscription" checked={formData.subscription} onChange={handleChange} />
                     </label>
-
                     <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
-                      <button type="button" onClick={handleSave} className="save-btn">
-                        Save
-                      </button>
-                      <button type="button" onClick={handleCancel} className="cancel-btn">
-                        Cancel
-                      </button>
+                      <button type="button" onClick={handleSave} className="save-btn">Save</button>
+                      <button type="button" onClick={handleCancel} className="cancel-btn">Cancel</button>
                     </div>
                   </form>
                 )}
               </div>
             </div>
 
-            {/* История покупок с поиском */}
             <section className="purchase-history">
               <h2>Your Purchase History</h2>
               <input
@@ -288,11 +269,9 @@ export default function Home() {
                     const ticket = tickets.find((t) => t.id === purchase.ticket_id);
                     return (
                       <li key={purchase.ticket_id}>
-                        <strong>{ticket?.event?.name || 'Unknown Event'}</strong> —{' '}
-                        {ticket?.event?.date_time
-                          ? new Date(ticket.event.date_time).toLocaleString()
-                          : 'Unknown Date'}{' '}
-                        — {ticket?.price} ₽ — Quantity: {purchase.quantity}
+                        <strong>{ticket?.event?.name || 'Unknown Event'}</strong> — {
+                          ticket?.event?.date_time ? new Date(ticket.event.date_time).toLocaleString() : 'Unknown Date'
+                        } — {ticket?.price} ₽ — Quantity: {purchase.quantity}
                       </li>
                     );
                   })}
@@ -303,16 +282,13 @@ export default function Home() {
         )}
 
         <div className="white_part"></div>
-
         <div className="pictures">
           <div className="picture_1">
             <img src={casset} alt="music casset" className="profile-img" />
           </div>
-
           <div className="picture_2">
             <img src={road_sign} alt="road_sign" className="profile-img" />
           </div>
-
           <div className="picture_3">
             <img src={cd} alt="cd" className="profile-img" />
           </div>
@@ -330,7 +306,6 @@ export default function Home() {
           <p>Copyright @2025 All rights reserved - Diamond Festival</p>
         </div>
       </footer>
-
     </div>
   );
 }

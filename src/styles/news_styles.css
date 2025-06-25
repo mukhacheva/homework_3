@@ -290,14 +290,14 @@ footer {
 
 @media (max-width: 768px) {
   .news_image {
-    max-width: 250px; /* чуть меньше на мобильных */
+    max-width: 250px;
     max-height: 250px;
   }
 }
 
 @media (max-width: 480px) {
   .news_image {
-    max-width: 150px; /* ещё меньше на маленьких экранах */
+    max-width: 150px;
     max-height: 150px;
   }
 }
