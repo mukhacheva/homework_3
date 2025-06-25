@@ -287,3 +287,17 @@ footer {
     font-size: 8px;
   }
 }
+
+@media (max-width: 768px) {
+  .news_image {
+    max-width: 250px; /* чуть меньше на мобильных */
+    max-height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .news_image {
+    max-width: 150px; /* ещё меньше на маленьких экранах */
+    max-height: 150px;
+  }
+}
