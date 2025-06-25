@@ -190,7 +190,6 @@ h1 {
   background-color: #2757b0c5 !important;
 }
 
-/* Активный (выбранный) сортировщик - повторяем hover-цвет */
 .sort-name.active {
   background-color: rgba(48, 87, 50, 0.8) !important;
   box-shadow: 0 0 8px rgba(48, 87, 50, 0.6);

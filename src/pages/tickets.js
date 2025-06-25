@@ -9,7 +9,7 @@ export default function TicketsPage() {
   const [tickets, setTickets] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [message, setMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); 
+  const [errorMessage, setErrorMessage] = useState('');
   const [sortedTickets, setSortedTickets] = useState([]);
   const [sortType, setSortType] = useState(null);
 
@@ -58,11 +58,11 @@ export default function TicketsPage() {
 
     if (quantity > 3) {
       setErrorMessage('You cannot reserve more than 3 tickets per account.');
-      setTimeout(() => setErrorMessage(''), 5000); // автоубирается через 3 сек
+      setTimeout(() => setErrorMessage(''), 5000);
       return;
     }
 
-    api.post('/tickets/purchase/', {
+    api.post('/purchase/', {  // изменили URL на /purchase/
       ticket_id: ticketId,
       quantity: quantity,
     })
@@ -70,6 +70,7 @@ export default function TicketsPage() {
         setMessage('Ticket reserved successfully!');
       })
       .catch(err => {
+        console.log(err.response?.data);
         setMessage(err.response?.data?.non_field_errors?.[0] || 'Reservation failed.');
       });
   };
@@ -83,14 +84,12 @@ export default function TicketsPage() {
         <div className="tickets-section">
           <h1>Available Tickets</h1>
 
-          {/* Ошибка покупки сверху кнопок */}
           {errorMessage && (
             <div className="error-notification">
               {errorMessage}
             </div>
           )}
 
-          {/* Кнопки сортировки */}
           <div className="sorting-buttons">
             <button
               className={`sort-name ${sortType === 'name' ? 'active' : ''}`}

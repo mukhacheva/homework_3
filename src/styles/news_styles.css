@@ -204,10 +204,16 @@ body {
   opacity: 1;
 }
 
-input[type="text"] {
+/* input[type="text"] {
   background-color: #84848434; 
   border-radius: 15px; 
+} */
+
+.search_input {
+  background-color: #84848434;
+  border-radius: 15px;
 }
+
 
 .show-more-comments-btn {
   background-color: rgba(42, 157, 143, 0.3);

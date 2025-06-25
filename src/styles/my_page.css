@@ -30,14 +30,26 @@ html, body {
 main {
   display: flex;
   flex-direction: row;
+      background-color: white;
+    margin-bottom: 0px;
+    
 }
 
 .person_info {
   width: 505px;
-  background-color: #D9D9D9;
+  background: linear-gradient(to bottom, 
+  rgba(217, 217, 217, 0.05) 0%,  
+    rgba(217, 217, 217, 0.1) 10%,      
+    rgba(217, 217, 217, 1) 40%,        
+    rgba(217, 217, 217, 1) 60%,       
+    rgba(217, 217, 217, 0.1) 90%,  
+    rgba(217, 217, 217, 0.05) 100%   
+  );
+
   display: flex;
   flex-direction: column;
 }
+
 
 .hello h1 {
   margin-top: 50px;
@@ -122,7 +134,7 @@ footer {
 .foot_nav {
   display: flex;
   gap: 30px;
-  margin-top: 10px;
+  margin-top: 0px;
 }
 
 .foot_nav a {

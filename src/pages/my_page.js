@@ -10,13 +10,10 @@ import cd from '../img/cd.png';
 import api from '../api/user';
 import Modal from '../components/modal';
 
-export const getCurrentUser = () => {
-  return api.get('/api/auth/users/me/');
-};
-
-export const updateUserData = (data) => {
-  return api.put('/api/auth/users/me/', data);
-};
+export const getCurrentUser = () => api.get('/api/auth/users/me/');
+export const updateUserData = (data) => api.put('/api/auth/users/me/', data);
+export const getUserPurchaseHistory = () => api.get('/purchase/');
+export const getAllTickets = () => api.get('/tickets/');
 
 const handleLogout = () => {
   localStorage.removeItem('access_token');
@@ -32,6 +29,8 @@ export default function Home() {
   const [error, setError] = useState('');
   const [genres, setGenres] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [purchases, setPurchases] = useState([]);
+  const [tickets, setTickets] = useState([]);
 
   const navigate = useNavigate();
 
@@ -40,7 +39,6 @@ export default function Home() {
       try {
         const response = await getCurrentUser();
         const data = response.data;
-
         const formattedPhone = formatPhone(data.phone || '');
 
         setUserData({
@@ -76,14 +74,27 @@ export default function Home() {
     fetchGenres();
   }, []);
 
+  useEffect(() => {
+    const fetchPurchasesAndTickets = async () => {
+      try {
+        const [purchasesResponse, ticketsResponse] = await Promise.all([
+          getUserPurchaseHistory(),
+          getAllTickets(),
+        ]);
+        setPurchases(purchasesResponse.data);
+        setTickets(ticketsResponse.data);
+      } catch (err) {
+        console.error('Failed to load purchase data or tickets', err);
+      }
+    };
+
+    fetchPurchasesAndTickets();
+  }, []);
+
   const formatPhone = (value) => {
     let digits = value.replace(/\D/g, '');
-    if (digits.length === 10 && digits.startsWith('9')) {
-      digits = '7' + digits;
-    }
-    if (digits.startsWith('8')) {
-      digits = '7' + digits.slice(1);
-    }
+    if (digits.length === 10 && digits.startsWith('9')) digits = '7' + digits;
+    if (digits.startsWith('8')) digits = '7' + digits.slice(1);
 
     let formatted = '+7';
     if (digits.length >= 1) formatted += '(' + digits.slice(1, 4);
@@ -112,7 +123,7 @@ export default function Home() {
     try {
       const toSend = {
         ...formData,
-        phone: formData.phone.replace(/\D/g, ''), 
+        phone: formData.phone.replace(/\D/g, ''),
         birth_date: formData.birth_date.split('.').reverse().join('-'),
       };
 
@@ -162,115 +173,129 @@ export default function Home() {
         )}
 
         {userData && (
-          <div className="person_info">
-            <div className="info_block hello">
-              <h1>Hello, {userData.username}!</h1>
-              <p>It's you:</p>
+          <>
+            <div className="person_info">
+              <div className="info_block hello">
+                <h1>Hello, {userData.username}!</h1>
+                <p>It's you:</p>
 
-              {!editMode ? (
-                <>
-                  <ul>
-                    <li>{userData.phone}</li>
-                    <li>
-                      {genres.find((g) => g.id === userData.genre)?.genre_name ||
-                        userData.genre}
-                    </li>
-                    <li>{userData.birth_date}</li>
-                    <li>Subscription: {userData.subscription ? '1' : '0'}</li>
-                  </ul>
+                {!editMode ? (
+                  <>
+                    <ul>
+                      <li>{userData.phone}</li>
+                      <li>
+                        {genres.find((g) => g.id === userData.genre)?.genre_name ||
+                          userData.genre}
+                      </li>
+                      <li>{userData.birth_date}</li>
+                      <li>Subscription: {userData.subscription ? '1' : '0'}</li>
+                    </ul>
 
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '10px',
-                      marginTop: '10px',
-                      alignItems: 'start',
-                    }}
-                  >
-                    <button
-                      type="button"
-                      className="edit-btn"
-                      onClick={() => {
-                        setFormData({ ...userData });
-                        setEditMode(true);
-                      }}
+                    <div
+                      // style={{
+                      //   display: 'flex',
+                      //   flexDirection: 'column',
+                      //   gap: '10px',
+                      //   marginTop: '10px',
+                      //   alignItems: 'start',
+                      // }}
                     >
-                      Change data
-                    </button>
-
-                    <div className="logout_style">
                       <button
                         type="button"
-                        className="logout-btn"
-                        onClick={handleLogout}
+                        className="edit-btn"
+                        onClick={() => {
+                          setFormData({ ...userData });
+                          setEditMode(true);
+                        }}
                       >
-                        Logout
+                        Change data
+                      </button>
+
+                      <div className="logout_style">
+                        <button
+                          type="button"
+                          className="logout-btn"
+                          onClick={handleLogout}
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <form className="edit-form" onSubmit={(e) => e.preventDefault()}>
+                    <label>
+                      Phone: <br />
+                      <input type="text" name="phone" value={formData.phone} readOnly />
+                    </label>
+
+                    <label>
+                      Genre: <br />
+                      <select name="genre" value={formData.genre} onChange={handleChange}>
+                        {genres.map((genre) => (
+                          <option key={genre.id} value={genre.id}>
+                            {genre.genre_name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <label>
+                      Birth Date: <br />
+                      <input
+                        type="text"
+                        name="birth_date"
+                        value={formData.birth_date}
+                        onChange={handleChange}
+                      />
+                    </label>
+
+                    <label>
+                      Subscription: <br />
+                      <input
+                        type="checkbox"
+                        name="subscription"
+                        checked={formData.subscription}
+                        onChange={handleChange}
+                      />
+                    </label>
+
+                    <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
+                      <button type="button" onClick={handleSave} className="save-btn">
+                        Save
+                      </button>
+                      <button type="button" onClick={handleCancel} className="cancel-btn">
+                        Cancel
                       </button>
                     </div>
-                  </div>
-                </>
-              ) : (
-                <form className="edit-form" onSubmit={(e) => e.preventDefault()}>
-                  {/* Убираем email из формы */}
-
-                  <label>
-                    Phone: <br />
-                    <input
-                      type="text"
-                      name="phone"
-                      value={formData.phone}
-                      readOnly
-                    />
-                  </label>
-
-                  <label>
-                    Genre: <br />
-                    <select name="genre" value={formData.genre} onChange={handleChange}>
-                      {genres.map((genre) => (
-                        <option key={genre.id} value={genre.id}>
-                          {genre.genre_name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <label>
-                    Birth Date: <br />
-                    <input
-                      type="text"
-                      name="birth_date"
-                      value={formData.birth_date}
-                      onChange={handleChange}
-                    />
-                  </label>
-
-                  <label>
-                    Subscription: <br />
-                    <input
-                      type="checkbox"
-                      name="subscription"
-                      checked={formData.subscription}
-                      onChange={handleChange}
-                    />
-                  </label>
-
-                  <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
-                    <button type="button" onClick={handleSave} className="save-btn">
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleCancel}
-                      className="cancel-btn"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              )}
+                  </form>
+                )}
+              </div>
             </div>
-          </div>
+
+            {/* История покупок */}
+            <section className="purchase-history" style={{ marginTop: '30px' }}>
+              <h2>Your Purchase History</h2>
+              {purchases.length === 0 ? (
+                <p>You haven't purchased any tickets yet.</p>
+              ) : (
+                <ul>
+                  {purchases.map((purchase) => {
+                    const ticket = tickets.find((t) => t.id === purchase.ticket_id);
+                    return (
+                      <li key={purchase.ticket_id}>
+                        <strong>{ticket?.event?.name || 'Unknown Event'}</strong> —{' '}
+                        {ticket?.event?.date_time
+                          ? new Date(ticket.event.date_time).toLocaleString()
+                          : 'Unknown Date'}{' '}
+                        — {ticket?.price} ₽ — Quantity: {purchase.quantity}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
+          </>
         )}
 
         <div className="white_part"></div>

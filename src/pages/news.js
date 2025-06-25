@@ -256,12 +256,23 @@ export default function Home() {
       <ContentSlider />
 
       <main className="news_container">
-        <input
+        {/* <input
           type="text"
           placeholder="Search news..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+        /> */}
+
+        <div className="search_input_wrapper">
+        <input
+          type="text"
+          className="search_input"
+          placeholder="Search news..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
+      </div>
+
 
         {loading && <p>Loading news...</p>}
         {error && <p>{error}</p>}
