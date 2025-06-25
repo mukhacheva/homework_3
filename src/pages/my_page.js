@@ -31,6 +31,7 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [purchases, setPurchases] = useState([]);
   const [tickets, setTickets] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const navigate = useNavigate();
 
@@ -150,6 +151,11 @@ export default function Home() {
     setEditMode(false);
   };
 
+  const filteredPurchases = purchases.filter((purchase) => {
+    const ticket = tickets.find((t) => t.id === purchase.ticket_id);
+    return ticket?.event?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
@@ -191,15 +197,7 @@ export default function Home() {
                       <li>Subscription: {userData.subscription ? '1' : '0'}</li>
                     </ul>
 
-                    <div
-                      // style={{
-                      //   display: 'flex',
-                      //   flexDirection: 'column',
-                      //   gap: '10px',
-                      //   marginTop: '10px',
-                      //   alignItems: 'start',
-                      // }}
-                    >
+                    <div>
                       <button
                         type="button"
                         className="edit-btn"
@@ -273,14 +271,20 @@ export default function Home() {
               </div>
             </div>
 
-            {/* История покупок */}
-            <section className="purchase-history" style={{ marginTop: '30px' }}>
+            {/* История покупок с поиском */}
+            <section className="purchase-history">
               <h2>Your Purchase History</h2>
-              {purchases.length === 0 ? (
-                <p>You haven't purchased any tickets yet.</p>
+              <input
+                type="text"
+                placeholder="Search by event name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {filteredPurchases.length === 0 ? (
+                <p>No matching tickets found.</p>
               ) : (
                 <ul>
-                  {purchases.map((purchase) => {
+                  {filteredPurchases.map((purchase) => {
                     const ticket = tickets.find((t) => t.id === purchase.ticket_id);
                     return (
                       <li key={purchase.ticket_id}>
@@ -326,6 +330,7 @@ export default function Home() {
           <p>Copyright @2025 All rights reserved - Diamond Festival</p>
         </div>
       </footer>
+
     </div>
   );
 }

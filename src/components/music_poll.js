@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/music_poll.css';
+import axios from 'axios';
 
 const genres = ['Rock', 'Pop', 'Jazz', 'Hip-hop', 'Classical'];
 
@@ -8,6 +9,9 @@ const MusicPoll = () => {
   const [answers, setAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
   const [userName, setUserName] = useState('');
+  const [recommendedArtists, setRecommendedArtists] = useState([]);
+  const [loadingArtists, setLoadingArtists] = useState(false);
+  const [errorLoadingArtists, setErrorLoadingArtists] = useState(null);
 
   const questions = [
     {
@@ -70,11 +74,12 @@ const MusicPoll = () => {
 
   const isAnswered = () => {
     const ans = answers[currentQ];
+    if (!ans) return false;
     return questions[currentQ].type === 'text'
-      ? !!ans?.value?.trim()
+      ? !!ans.value?.trim()
       : Array.isArray(ans)
         ? ans.length > 0
-        : !!ans;
+        : true;
   };
 
   const calculateScores = () => {
@@ -99,9 +104,47 @@ const MusicPoll = () => {
     return topGenres[0] || 'No genre';
   };
 
+  const fetchArtistsByGenre = async (genre) => {
+    setLoadingArtists(true);
+    setErrorLoadingArtists(null);
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/artists/');
+      const artists = response.data;
+      const filtered = artists.filter(artist =>
+        artist.genres && artist.genres.some(g => g.toLowerCase() === genre.toLowerCase())
+      );
+      setRecommendedArtists(filtered);
+    } catch (error) {
+      setErrorLoadingArtists('Ошибка при загрузке артистов');
+      setRecommendedArtists([]);
+    } finally {
+      setLoadingArtists(false);
+    }
+  };
+
   const handleSubmit = () => {
     setShowResults(true);
+    const favGenre = getFavoriteGenre();
+    if (favGenre !== 'No genre') {
+      fetchArtistsByGenre(favGenre);
+    } else {
+      setRecommendedArtists([]);
+    }
   };
+
+  const handleTryAgain = () => {
+    setShowResults(false);
+    setAnswers({});
+    setCurrentQ(0);
+    setUserName('');
+    setRecommendedArtists([]);
+    setErrorLoadingArtists(null);
+  };
+
+  const currentQuestion = questions[currentQ];
+  if (!currentQuestion && !showResults) {
+    return <div>Ошибка: вопрос не найден</div>;
+  }
 
   return (
     <div className="music-poll">
@@ -111,22 +154,38 @@ const MusicPoll = () => {
         <div className="poll-results">
           <h4>Hi{userName ? `, ${userName}` : ''}!</h4>
           <h4>Your favorite music genre: <em>{getFavoriteGenre()}</em></h4>
-          <button onClick={() => {
-            setShowResults(false);
-            setAnswers({});
-            setCurrentQ(0);
-            setUserName('');
-          }}>
+
+          {loadingArtists && <p>Loading recommended artists...</p>}
+          {errorLoadingArtists && <p style={{ color: 'red' }}>{errorLoadingArtists}</p>}
+
+          {!loadingArtists && recommendedArtists.length > 0 && (
+            <>
+              <h5>Recommended artists in {getFavoriteGenre()}:</h5>
+              <div className="recommended-artists">
+                <ul>
+                  {recommendedArtists.map(artist => (
+                    <li key={artist.id}>{artist.artist_name}</li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
+
+          {!loadingArtists && recommendedArtists.length === 0 && (
+            <p>No recommended artists found for this genre.</p>
+          )}
+
+          <button onClick={handleTryAgain}>
             Try again
           </button>
         </div>
       ) : (
         <>
           <div className="poll-question">
-            <p>{questions[currentQ].question}</p>
+            <p>{currentQuestion.question}</p>
             <div className="poll-options">
-              {questions[currentQ].type === 'single' &&
-                questions[currentQ].options.map((opt, i) => (
+              {currentQuestion.type === 'single' &&
+                currentQuestion.options.map((opt, i) => (
                   <button
                     key={i}
                     className={answers[currentQ]?.value === opt.answer ? 'selected' : ''}
@@ -136,7 +195,7 @@ const MusicPoll = () => {
                   </button>
                 ))
               }
-              {questions[currentQ].type === 'text' && (
+              {currentQuestion.type === 'text' && (
                 <textarea
                   rows="2"
                   cols="40"

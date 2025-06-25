@@ -256,12 +256,6 @@ export default function Home() {
       <ContentSlider />
 
       <main className="news_container">
-        {/* <input
-          type="text"
-          placeholder="Search news..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        /> */}
 
         <div className="search_input_wrapper">
         <input
