@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Modal from './modal';
 import '../styles/auth_form.css';
 
-import api from '../api/user'; // путь поправь, если нужно
+import api from '../api/user'; 
 
 function ContactForm() {
   const [formData, setFormData] = useState({

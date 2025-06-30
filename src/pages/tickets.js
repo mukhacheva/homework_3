@@ -12,18 +12,41 @@ export default function TicketsPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [sortedTickets, setSortedTickets] = useState([]);
   const [sortType, setSortType] = useState(null);
+  const [favoriteGenre, setFavoriteGenre] = useState(null);
 
+  // Получаем любимый жанр пользователя
+  useEffect(() => {
+    api.get('/user/me/')
+      .then(res => {
+        setFavoriteGenre(res.data.genre); // ожидаем строку, например "Rock"
+      })
+      .catch(() => console.log('Failed to load user data'));
+  }, []);
+
+  // Получаем билеты и сортируем так, чтобы билеты с любимым жанром шли первыми
   useEffect(() => {
     api.get('/tickets/')
       .then(res => {
-        setTickets(res.data);
-        setSortedTickets(res.data);
+        const allTickets = res.data;
+
+        if (favoriteGenre) {
+          const sorted = [
+            ...allTickets.filter(ticket => ticket.event.artist.genres.includes(favoriteGenre)),
+            ...allTickets.filter(ticket => !ticket.event.artist.genres.includes(favoriteGenre)),
+          ];
+          setSortedTickets(sorted);
+        } else {
+          setSortedTickets(allTickets);
+        }
+
+        setTickets(allTickets);
       })
       .catch(() => setMessage('Failed to load tickets.'));
-  }, []);
+  }, [favoriteGenre]);
 
+  // Сортировка по остальным критериям
   const sortTickets = (type) => {
-    let sorted = [...tickets];
+    let sorted = [...sortedTickets];
 
     switch (type) {
       case 'name':
@@ -62,7 +85,7 @@ export default function TicketsPage() {
       return;
     }
 
-    api.post('/purchase/', {  // изменили URL на /purchase/
+    api.post('/purchase/', { 
       ticket_id: ticketId,
       quantity: quantity,
     })

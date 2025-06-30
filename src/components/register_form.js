@@ -1,20 +1,28 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Modal from './modal';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import enGB from 'date-fns/locale/en-GB'; // английская локаль
+import 'react-datepicker/dist/react-datepicker.css';
 import '../styles/register_form.css';
 import api from '../api/user';
+
+registerLocale('en', enGB);
 
 export const registerUser = (data) => {
   return api.post('/api/auth/users/', data);
 };
 
 function RegistrationForm() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: '',
     username: '',
     password: '',
     confirmPassword: '',
     phone: '',
-    birth_date: ''
+    birth_date: null, // теперь это Date объект
   });
 
   const [errors, setErrors] = useState({});
@@ -50,7 +58,7 @@ function RegistrationForm() {
         else if (digits && !/^8|7/.test(digits)) error = 'Phone must start with 8 or 7!';
         break;
       case 'birth_date':
-        if (value && !/^\d{2}\.\d{2}\.\d{4}$/.test(value)) error = 'Use format DD.MM.YYYY!';
+        if (!value) error = 'Date of birth is required!';
         break;
       default:
         break;
@@ -73,25 +81,21 @@ function RegistrationForm() {
     return formatted;
   };
 
-  const formatDOB = (value) => {
-    const digits = value.replace(/\D/g, '').slice(0, 8);
-    const parts = [];
-    if (digits.length > 0) parts.push(digits.slice(0, 2));
-    if (digits.length > 2) parts.push(digits.slice(2, 4));
-    if (digits.length > 4) parts.push(digits.slice(4, 8));
-    return parts.join('.');
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     let formattedValue = value;
 
     if (name === 'phone') formattedValue = formatPhone(value);
-    if (name === 'birth_date') formattedValue = formatDOB(value);
 
     setFormData((prev) => ({ ...prev, [name]: formattedValue }));
     const error = validateField(name, formattedValue);
     setErrors((prev) => ({ ...prev, [name]: error }));
+  };
+
+  const handleDateChange = (date) => {
+    setFormData((prev) => ({ ...prev, birth_date: date }));
+    const error = validateField('birth_date', date);
+    setErrors((prev) => ({ ...prev, birth_date: error }));
   };
 
   const handleSubmit = (e) => {
@@ -116,7 +120,7 @@ function RegistrationForm() {
       username: formData.username,
       password: formData.password,
       phone: formData.phone.replace(/\D/g, ''),
-      birth_date: formData.birth_date.split('.').reverse().join('-')
+      birth_date: formData.birth_date ? formData.birth_date.toISOString().split('T')[0] : null, // формат YYYY-MM-DD
     };
 
     try {
@@ -128,9 +132,13 @@ function RegistrationForm() {
         password: '',
         confirmPassword: '',
         phone: '',
-        birth_date: ''
+        birth_date: null,
       });
       setAgreedToPolicy(false);
+
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (err) {
       if (err.response?.data) {
         const apiErrors = {};
@@ -152,36 +160,78 @@ function RegistrationForm() {
         <form onSubmit={handleSubmit}>
           <div className="form_row">
             <div className="input_wrapper">
-              <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+              />
               {errors.email && <span className="error">{errors.email}</span>}
             </div>
 
             <div className="input_wrapper">
-              <input type="text" name="username" placeholder="Username" value={formData.username} onChange={handleChange} />
+              <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleChange}
+              />
               {errors.username && <span className="error">{errors.username}</span>}
             </div>
           </div>
 
           <div className="form_row">
             <div className="input_wrapper">
-              <input type="password" name="password" placeholder="Create a password" value={formData.password} onChange={handleChange} />
+              <input
+                type="password"
+                name="password"
+                placeholder="Create a password"
+                value={formData.password}
+                onChange={handleChange}
+              />
               {errors.password && <span className="error">{errors.password}</span>}
             </div>
 
             <div className="input_wrapper">
-              <input type="password" name="confirmPassword" placeholder="Repeat your password" value={formData.confirmPassword} onChange={handleChange} />
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Repeat your password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
               {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
             </div>
           </div>
 
           <div className="form_row">
             <div className="input_wrapper">
-              <input type="tel" name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} maxLength={18} />
+              <input
+                type="tel"
+                name="phone"
+                placeholder="Phone"
+                value={formData.phone}
+                onChange={handleChange}
+                maxLength={18}
+              />
               {errors.phone && <span className="error">{errors.phone}</span>}
             </div>
 
             <div className="input_wrapper">
-              <input type="text" name="birth_date" placeholder="Date of Birth" value={formData.birth_date} onChange={handleChange} maxLength={10} />
+              <DatePicker
+                selected={formData.birth_date}
+                onChange={handleDateChange}
+                locale="en"
+                placeholderText="Date of Birth"
+                dateFormat="yyyy-MM-dd"
+                maxDate={new Date()}
+                showYearDropdown
+                scrollableYearDropdown
+                yearDropdownItemNumber={100}
+                className="date-picker-input"
+              />
               {errors.birth_date && <span className="error">{errors.birth_date}</span>}
             </div>
           </div>
@@ -198,7 +248,9 @@ function RegistrationForm() {
           </div>
 
           <div className="form_row">
-            <button type="submit" disabled={!agreedToPolicy}>Register</button>
+            <button type="submit" disabled={!agreedToPolicy}>
+              Register
+            </button>
           </div>
         </form>
       </div>
@@ -206,9 +258,7 @@ function RegistrationForm() {
       {showPolicyModal && (
         <Modal onClose={() => setShowPolicyModal(false)}>
           <h2>Privacy Policy Agreement</h2>
-          <p>
-            By clicking "Agree", you confirm that you have read and accepted our Privacy Policy.
-          </p>
+          <p>By clicking "Agree", you confirm that you have read and accepted our Privacy Policy.</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
             <button onClick={confirmRegistration}>Agree</button>
             <button onClick={() => setShowPolicyModal(false)}>Cancel</button>

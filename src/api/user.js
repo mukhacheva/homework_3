@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Базовый URL вашего бэкенда
 const API_URL = 'http://127.0.0.1:8000/';
 
 // Создаём экземпляр axios

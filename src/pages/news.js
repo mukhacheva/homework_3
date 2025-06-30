@@ -59,6 +59,12 @@ export default function Home() {
       });
   }, []);
 
+  const highlightText = (text, query) => {
+    if (!query) return text;
+    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')})`, 'gi');
+    return text.replace(regex, '<mark>$1</mark>');
+  };
+
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
@@ -192,7 +198,6 @@ export default function Home() {
     ));
   };
 
-  // Рендер комментариев верхнего уровня с ограничением по 5 штук
   const renderCommentsWithLimit = (commentsList, newsId, index) => {
     const showAll = showAllComments[newsId];
     const commentsToShow = showAll ? commentsList : commentsList.slice(0, 5);
@@ -258,15 +263,14 @@ export default function Home() {
       <main className="news_container">
 
         <div className="search_input_wrapper">
-        <input
-          type="text"
-          className="search_input"
-          placeholder="Search news..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
-
+          <input
+            type="text"
+            className="search_input"
+            placeholder="Search news..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
 
         {loading && <p>Loading news...</p>}
         {error && <p>{error}</p>}
@@ -278,11 +282,18 @@ export default function Home() {
             className="news_item"
             style={{ background: gradients[index % gradients.length] }}
           >
-            <h2 className="news_title">{item.title || 'Untitled'}</h2>
+            <h2
+              className="news_title"
+              dangerouslySetInnerHTML={{
+                __html: highlightText(item.title || 'Untitled', searchQuery)
+              }}
+            />
             <p className="news_date"><i>{formatDate(item.created_at)}</i></p>
             <p
               className="news_text"
-              dangerouslySetInnerHTML={{ __html: item.text }}
+              dangerouslySetInnerHTML={{
+                __html: highlightText(item.text, searchQuery)
+              }}
             />
             {item.image && (
               <img
