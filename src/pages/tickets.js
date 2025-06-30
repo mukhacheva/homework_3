@@ -14,16 +14,14 @@ export default function TicketsPage() {
   const [sortType, setSortType] = useState(null);
   const [favoriteGenre, setFavoriteGenre] = useState(null);
 
-  // Получаем любимый жанр пользователя
   useEffect(() => {
     api.get('/user/me/')
       .then(res => {
-        setFavoriteGenre(res.data.genre); // ожидаем строку, например "Rock"
+        setFavoriteGenre(res.data.genre);
       })
       .catch(() => console.log('Failed to load user data'));
   }, []);
 
-  // Получаем билеты и сортируем так, чтобы билеты с любимым жанром шли первыми
   useEffect(() => {
     api.get('/tickets/')
       .then(res => {
@@ -44,7 +42,6 @@ export default function TicketsPage() {
       .catch(() => setMessage('Failed to load tickets.'));
   }, [favoriteGenre]);
 
-  // Сортировка по остальным критериям
   const sortTickets = (type) => {
     let sorted = [...sortedTickets];
 
@@ -91,10 +88,34 @@ export default function TicketsPage() {
     })
       .then(() => {
         setMessage('Ticket reserved successfully!');
+
+        setTickets(prevTickets => 
+          prevTickets.map(t =>
+            t.id === ticketId 
+              ? { ...t, remaining_quantity: t.remaining_quantity - quantity } 
+              : t
+          )
+        );
+
+        setSortedTickets(prevSorted => 
+          prevSorted.map(t =>
+            t.id === ticketId 
+              ? { ...t, remaining_quantity: t.remaining_quantity - quantity } 
+              : t
+          )
+        );
+
+        setQuantities(prev => ({
+          ...prev,
+          [ticketId]: 1,
+        }));
+
+        setTimeout(() => setMessage(''), 3000);
       })
       .catch(err => {
         console.log(err.response?.data);
         setMessage(err.response?.data?.non_field_errors?.[0] || 'Reservation failed.');
+        setTimeout(() => setMessage(''), 3000);
       });
   };
 
