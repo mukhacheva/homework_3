@@ -111,6 +111,25 @@ export default function Home() {
     }));
   };
 
+  // Рекурсивная функция для вставки ответа в нужный комментарий дерева
+  const insertReply = (commentsList, reply) => {
+    return commentsList.map(comment => {
+      if (comment.id === reply.replied_to) {
+        return {
+          ...comment,
+          replies: comment.replies ? [reply, ...comment.replies] : [reply],
+        };
+      }
+      if (comment.replies && comment.replies.length > 0) {
+        return {
+          ...comment,
+          replies: insertReply(comment.replies, reply),
+        };
+      }
+      return comment;
+    });
+  };
+
   const handleCommentSubmit = (e, newsId) => {
     e.preventDefault();
     const text = newComment[newsId]?.trim();
@@ -122,10 +141,28 @@ export default function Home() {
       replied_to: replyTo[newsId] || null,
     })
       .then((res) => {
-        setComments((prev) => ({
-          ...prev,
-          [newsId]: [res.data, ...(prev[newsId] || [])],
-        }));
+        const newCommentObj = {
+          ...res.data,
+          author_name: res.data.author_name || res.data.author?.username || 'You',
+          replies: res.data.replies || [],
+          is_deleted: false,
+        };
+
+        setComments((prev) => {
+          const currentComments = prev[newsId] || [];
+
+          let updatedComments;
+          if (newCommentObj.replied_to) {
+            // Вставляем ответ внутрь нужного комментария
+            updatedComments = insertReply(currentComments, newCommentObj);
+          } else {
+            // Добавляем новый комментарий верхнего уровня
+            updatedComments = [newCommentObj, ...currentComments];
+          }
+
+          return { ...prev, [newsId]: updatedComments };
+        });
+
         setNewComment((prev) => ({ ...prev, [newsId]: '' }));
         setReplyTo((prev) => ({ ...prev, [newsId]: null }));
       })
@@ -147,11 +184,6 @@ export default function Home() {
       .catch((err) => {
         console.error('Error deleting comment:', err);
       });
-  };
-
-  const countTopLevelComments = (commentsList) => {
-    if (!commentsList) return 0;
-    return commentsList.length;
   };
 
   const renderReplies = (replies, newsId, index) => {
@@ -181,7 +213,7 @@ export default function Home() {
         </p>
         {!reply.is_deleted && isAuthenticated && (
           <div className="comment_actions">
-            {(reply.author == userId) && (
+            {(reply.author === userId) && (
               <button onClick={() => handleDeleteComment(reply.id, newsId)}>
                 Delete
               </button>
@@ -219,7 +251,7 @@ export default function Home() {
 
             {!comment.is_deleted && isAuthenticated && (
               <div className="comment_actions">
-                {(comment.author == userId) && (
+                {(comment.author === userId) && (
                   <button onClick={() => handleDeleteComment(comment.id, newsId)}>
                     Delete
                   </button>
